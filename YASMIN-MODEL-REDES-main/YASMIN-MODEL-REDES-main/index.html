@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PRORRIDRE Smart Dashboard - Sistema de Monitoreo Inteligente del Programa Regional de Riego y Drenaje, GORE Puno">
+  <title>PRORRIDRE — Inicio de Sesión</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="assets/logo.jpg" type="image/jpeg">
+  <style>
+    .btn-demo-chip {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #93c5fd;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-demo-chip:hover {
+      background: rgba(59, 130, 246, 0.25);
+      border-color: #60a5fa;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="login-page">
+
+  <div class="login-card">
+    <!-- Logo -->
+    <div class="login-logo">
+      <img src="assets/logo.jpg" alt="PRORRIDRE Logo">
+      <h1>PRORRIDRE</h1>
+      <p>Sistema de Monitoreo Inteligente<br>Gobierno Regional de Puno</p>
+    </div>
+
+    <!-- Auth Tabs Switcher -->
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">
+        🔐 Iniciar Sesión
+      </button>
+      <button type="button" class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">
+        📝 Registrarse
+      </button>
+    </div>
+
+    <!-- Active Session Notification Card -->
+    <div id="sessionDetectedBox" style="display:none; margin: 12px 0 16px 0; padding: 12px 14px; border-radius: 8px; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.35); text-align: center;">
+      <div style="font-size: 13px; color: #e2e8f0; margin-bottom: 4px;">
+        📌 <strong>Sesión activa:</strong> <span id="sessionDetectedName" style="color: #60a5fa; font-weight: 600;"></span>
+      </div>
+      <div style="font-size: 11px; color: #94a3b8; margin-bottom: 10px;">
+        Perfil asignado: <span id="sessionDetectedRole" style="color: #38bdf8; font-weight: 600;"></span>
+      </div>
+      <div style="display: flex; gap: 8px; justify-content: center;">
+        <a href="dashboard.html" class="btn btn-primary" style="padding: 6px 14px; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+          Entrar al Dashboard →
+        </a>
+        <button type="button" onclick="limpiarSesionYQuedarse()" class="btn btn-ghost" style="padding: 6px 12px; font-size: 12px; border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5;">
+          🚪 Cambiar Usuario
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Messages -->
+    <div id="loginError" class="login-error">
+      <span>⚠️</span> <span id="loginErrorMsg">Credenciales incorrectas</span>
+    </div>
+    <div id="loginSuccess" class="login-success">
+      <span>✅</span> <span id="loginSuccessMsg">Operación completada con éxito</span>
+    </div>
+
+    <!-- PANEL 1: Login Form -->
+    <div class="auth-panel active" id="panelLogin">
+      <form id="loginForm" autocomplete="off">
+        <div class="form-group">
+          <label for="loginUser">DNI / Usuario Institucional</label>
+          <input type="text" id="loginUser" placeholder="Ingrese su DNI o usuario" required>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPass">Contraseña</label>
+          <input type="password" id="loginPass" placeholder="Ingrese su contraseña" required>
+        </div>
+
+        <div class="form-group">
+          <label for="loginRol">Rol de Acceso</label>
+          <select id="loginRol">
+            <option value="">— Auto-detectar rol del perfil —</option>
+            <option value="Directivo">Directivo</option>
+            <option value="Residente de Obra">Residente de Obra</option>
+            <option value="Abastecimiento">Abastecimiento</option>
+            <option value="TI Admin">TI Admin</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="loginBtn" style="width: 100%;">
+          🔐 Ingresar al Sistema
+        </button>
+      </form>
+    </div>
+
+    <!-- PANEL 2: Register Form -->
+    <div class="auth-panel" id="panelRegister">
+      <form id="registerForm" autocomplete="off">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regDni">DNI</label>
+            <input type="text" id="regDni" placeholder="8 dígitos" maxlength="8" pattern="[0-9]{8}" required>
+          </div>
+          <div class="form-group">
+            <label for="regUser">Usuario</label>
+            <input type="text" id="regUser" placeholder="ej. mquispe" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="regNombre">Nombres y Apellidos</label>
+          <input type="text" id="regNombre" placeholder="ej. Ing. Mario Quispe Condori" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regCargo">Cargo</label>
+            <input type="text" id="regCargo" placeholder="ej. Supervisor de Obra" required>
+          </div>
+          <div class="form-group">
+            <label for="regRol">Rol Institucional</label>
+            <select id="regRol" required>
+              <option value="Directivo">Directivo</option>
+              <option value="Residente de Obra">Residente de Obra</option>
+              <option value="Abastecimiento">Abastecimiento</option>
+              <option value="TI Admin">TI Admin</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="regPass">Contraseña</label>
+            <input type="password" id="regPass" placeholder="Mínimo 4 caracteres" minlength="4" required>
+          </div>
+          <div class="form-group">
+            <label for="regPassConfirm">Confirmar</label>
+            <input type="password" id="regPassConfirm" placeholder="Repetir contraseña" minlength="4" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="registerBtn" style="width: 100%;">
+          ✨ Crear Cuenta e Ingresar
+        </button>
+      </form>
+    </div>
+
+    <div class="login-footer">
+      © 2026 PRORRIDRE — GORE Puno · Todos los derechos reservados
+    </div>
+
+    <!-- Quick Access Demo Chips -->
+    <div class="login-hint" style="margin-top: 1.5rem; text-align: center;">
+      <div style="font-size: 11px; color: #94a3b8; margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+        ⚡ Accesos Rápidos Demo (Click para autocompletar)
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 10px;">
+        <button type="button" class="btn-demo-chip" onclick="cargarUsuarioDemo('admin', 'admin123', 'Directivo')">👤 Directivo (admin)</button>
+        <button type="button" class="btn-demo-chip" onclick="cargarUsuarioDemo('tiadmin', 'tiadmin123', 'TI Admin')">🖥️ TI Admin (tiadmin)</button>
+        <button type="button" class="btn-demo-chip" onclick="cargarUsuarioDemo('logistica', 'logistica123', 'Abastecimiento')">📦 Logística (logistica)</button>
+        <button type="button" class="btn-demo-chip" onclick="cargarUsuarioDemo('residente1', 'residente123', 'Residente de Obra')">🏗️ Residente (residente1)</button>
+      </div>
+      <div id="backendBadge" style="font-size: 11px; padding: 6px 8px; border-radius: 4px; background: rgba(59,130,246,0.15); color: #93c5fd; text-align: center;">
+        Verificando conexión con API On-Premise...
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    // Tab switching
+    function switchAuthTab(tab) {
+      hideAlerts();
+      const tabLogin = document.getElementById("tabLogin");
+      const tabRegister = document.getElementById("tabRegister");
+      const panelLogin = document.getElementById("panelLogin");
+      const panelRegister = document.getElementById("panelRegister");
+
+      if (tab === "register") {
+        tabLogin.classList.remove("active");
+        tabRegister.classList.add("active");
+        panelLogin.classList.remove("active");
+        panelRegister.classList.add("active");
+      } else {
+        tabRegister.classList.remove("active");
+        tabLogin.classList.add("active");
+        panelRegister.classList.remove("active");
+        panelLogin.classList.add("active");
+      }
+    }
+
+    // Check backend health
+    Api.checkHealth().then(isOnline => {
+      const badge = document.getElementById("backendBadge");
+      if (badge) {
+        if (isOnline) {
+          badge.style.background = "rgba(16, 185, 129, 0.2)";
+          badge.style.color = "#34d399";
+          badge.innerHTML = "🟢 Servidor FastAPI On-Premise En Línea (127.0.0.1:8000)";
+        } else {
+          badge.style.background = "rgba(245, 158, 11, 0.2)";
+          badge.style.color = "#fbbf24";
+          badge.innerHTML = "⚡ Modo Local Autónomo (Operativo sin servidor central)";
+        }
+      }
+    });
+
+    // Sesión previa: Mostrar información en vez de redirigir a ciegas
+    const currentSession = Auth.getSession();
+    const sessionBox = document.getElementById("sessionDetectedBox");
+    if (currentSession && sessionBox) {
+      const nameEl = document.getElementById("sessionDetectedName");
+      const roleEl = document.getElementById("sessionDetectedRole");
+      if (nameEl) nameEl.textContent = currentSession.nombre || currentSession.username;
+      if (roleEl) roleEl.textContent = currentSession.rol;
+      sessionBox.style.display = "block";
+    }
+
+    function limpiarSesionYQuedarse() {
+      localStorage.removeItem(Auth.SESSION_KEY);
+      localStorage.removeItem(Auth.TOKEN_KEY);
+      const sessionBox = document.getElementById("sessionDetectedBox");
+      if (sessionBox) sessionBox.style.display = "none";
+      showSuccess("Sesión finalizada. Ingrese con sus nuevas credenciales.");
+      document.getElementById("loginUser").value = "";
+      document.getElementById("loginPass").value = "";
+      document.getElementById("loginRol").value = "";
+    }
+
+    function cargarUsuarioDemo(user, pass, rol) {
+      document.getElementById("loginUser").value = user;
+      document.getElementById("loginPass").value = pass;
+      document.getElementById("loginRol").value = rol;
+      hideAlerts();
+      const loginBtn = document.getElementById("loginBtn");
+      if (loginBtn) {
+        loginBtn.focus();
+      }
+    }
+
+    const errorBox = document.getElementById("loginError");
+    const errorMsg = document.getElementById("loginErrorMsg");
+    const successBox = document.getElementById("loginSuccess");
+    const successMsg = document.getElementById("loginSuccessMsg");
+
+    function hideAlerts() {
+      errorBox.classList.remove("visible");
+      successBox.classList.remove("visible");
+    }
+
+    function showError(msg) {
+      hideAlerts();
+      errorMsg.textContent = msg;
+      errorBox.classList.add("visible");
+    }
+
+    function showSuccess(msg) {
+      hideAlerts();
+      successMsg.textContent = msg;
+      successBox.classList.add("visible");
+    }
+
+    /* ── Login Submission ── */
+    const loginForm = document.getElementById("loginForm");
+    loginForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      hideAlerts();
+
+      const user = document.getElementById("loginUser").value.trim();
+      const pass = document.getElementById("loginPass").value;
+      const rol  = document.getElementById("loginRol").value;
+
+      if (!user || !pass) {
+        showError("Complete todos los campos obligatorios.");
+        return;
+      }
+
+      const loginBtn = document.getElementById("loginBtn");
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Validando credenciales...";
+
+      try {
+        const result = await Api.login(user, pass, rol || null);
+
+        if (!result.success) {
+          showError(result.message);
+          loginBtn.disabled = false;
+          loginBtn.textContent = "🔐 Ingresar al Sistema";
+          return;
+        }
+
+        // Validate role if specified
+        if (rol && result.session.rol !== rol) {
+          localStorage.removeItem(Auth.SESSION_KEY);
+          showError("El rol seleccionado no coincide con su perfil. Su perfil asignado es: " + result.session.rol);
+          loginBtn.disabled = false;
+          loginBtn.textContent = "🔐 Ingresar al Sistema";
+          return;
+        }
+
+        // Ensure session is saved firmly in localStorage
+        localStorage.setItem(Auth.SESSION_KEY, JSON.stringify(result.session));
+        if (result.token) localStorage.setItem(Auth.TOKEN_KEY, result.token);
+
+        showSuccess("¡Sesión iniciada con éxito! Redirigiendo...");
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 300);
+      } catch (err) {
+        console.error("Login error:", err);
+        showError("Error de conexión durante el inicio de sesión.");
+        loginBtn.disabled = false;
+        loginBtn.textContent = "🔐 Ingresar al Sistema";
+      }
+    });
+
+    /* ── Register Submission ── */
+    const registerForm = document.getElementById("registerForm");
+    registerForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      hideAlerts();
+
+      const dni = document.getElementById("regDni").value.trim();
+      const user = document.getElementById("regUser").value.trim();
+      const nombre = document.getElementById("regNombre").value.trim();
+      const cargo = document.getElementById("regCargo").value.trim();
+      const rol = document.getElementById("regRol").value;
+      const pass = document.getElementById("regPass").value;
+      const passConfirm = document.getElementById("regPassConfirm").value;
+
+      if (!dni || !user || !nombre || !cargo || !pass) {
+        showError("Por favor complete todos los datos requeridos.");
+        return;
+      }
+
+      if (pass !== passConfirm) {
+        showError("Las contraseñas no coinciden. Verifíquelas e intente nuevamente.");
+        return;
+      }
+
+      const registerBtn = document.getElementById("registerBtn");
+      registerBtn.disabled = true;
+      registerBtn.textContent = "Registrando usuario...";
+
+      try {
+        const result = await Api.register({
+          dni,
+          username: user,
+          nombre,
+          cargo,
+          rol,
+          password: pass
+        });
+
+        if (!result.success) {
+          showError(result.message);
+          registerBtn.disabled = false;
+          registerBtn.textContent = "✨ Crear Cuenta e Ingresar";
+          return;
+        }
+
+        // Save session firmly
+        localStorage.setItem(Auth.SESSION_KEY, JSON.stringify(result.session));
+        if (result.token) localStorage.setItem(Auth.TOKEN_KEY, result.token);
+
+        showSuccess("¡Registro exitoso! Accediendo al sistema PRORRIDRE...");
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 500);
+      } catch (err) {
+        console.error("Register error:", err);
+        showError("Error de conexión durante el registro.");
+        registerBtn.disabled = false;
+        registerBtn.textContent = "✨ Crear Cuenta e Ingresar";
+      }
+    });
+  </script>
+</body>
+</html>

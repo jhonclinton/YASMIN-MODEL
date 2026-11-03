@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Informe Técnico: PRORRIDRE Smart ERP & Dashboard</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm 18mm 16mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.55;
+      font-size: 10pt;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Portada */
+    .cover-page {
+      page-break-after: always;
+      height: 94vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 2px solid #0f172a;
+      padding: 40px;
+      position: relative;
+      background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+    }
+
+    .cover-header {
+      border-bottom: 3px solid #0284c7;
+      padding-bottom: 18px;
+    }
+
+    .cover-header h3 {
+      font-size: 12pt;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #475569;
+      margin: 0 0 6px 0;
+    }
+
+    .cover-header h4 {
+      font-size: 10.5pt;
+      color: #0369a1;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .cover-body {
+      margin: auto 0;
+      text-align: center;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      background: #0284c7;
+      color: #ffffff;
+      padding: 6px 16px;
+      font-size: 9.5pt;
+      font-weight: 700;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .cover-title {
+      font-size: 23pt;
+      color: #0f172a;
+      font-weight: 800;
+      line-height: 1.25;
+      margin: 0 0 16px 0;
+    }
+
+    .cover-subtitle {
+      font-size: 12pt;
+      color: #334155;
+      font-weight: 500;
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.45;
+    }
+
+    .cover-footer {
+      border-top: 1px solid #cbd5e1;
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 9.5pt;
+      color: #475569;
+    }
+
+    .cover-footer strong {
+      color: #0f172a;
+    }
+
+    /* Estructura del contenido */
+    .page-break {
+      page-break-after: always;
+    }
+
+    h1 {
+      font-size: 16pt;
+      color: #0f172a;
+      border-bottom: 2px solid #0284c7;
+      padding-bottom: 6px;
+      margin-top: 24px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    h2 {
+      font-size: 12.5pt;
+      color: #0369a1;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      border-left: 4px solid #0284c7;
+      padding-left: 10px;
+    }
+
+    h3 {
+      font-size: 10.5pt;
+      color: #1e293b;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    p {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+
+    /* Cajas destacadas */
+    .callout {
+      background: #f0f9ff;
+      border-left: 4px solid #0284c7;
+      padding: 10px 14px;
+      margin: 12px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 9.5pt;
+    }
+
+    .callout-warning {
+      background: #fffbeb;
+      border-left-color: #f59e0b;
+    }
+
+    .callout-success {
+      background: #f0fdf4;
+      border-left-color: #10b981;
+    }
+
+    .callout-danger {
+      background: #fef2f2;
+      border-left-color: #ef4444;
+    }
+
+    /* Tablas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 8.5pt;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 6px 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 8pt;
+      letter-spacing: 0.5px;
+    }
+
+    tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    /* Tarjetas de Módulos ERP */
+    .grid-erp {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .card-erp {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 10px 12px;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .card-erp h4 {
+      margin: 0 0 4px 0;
+      font-size: 9.5pt;
+      color: #0369a1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-erp p {
+      font-size: 8.5pt;
+      margin: 0;
+      color: #475569;
+    }
+
+    /* Insignias */
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-amber { background: #fef3c7; color: #92400e; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+
+    ul, ol {
+      margin-top: 0;
+      margin-bottom: 10px;
+      padding-left: 20px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    .diagram-box {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 14px;
+      border-radius: 8px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 8pt;
+      line-height: 1.4;
+      margin: 14px 0;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== PORTADA ==================== -->
+  <div class="cover-page">
+    <div class="cover-header">
+      <h3>Universidad Nacional del Altiplano — Facultad de Ingeniería Mecánica Eléctrica, Electrónica y Sistemas</h3>
+      <h4>Escuela Profesional de Ingeniería de Sistemas · X Semestre</h4>
+      <h4>Curso: Tópicos en Sistemas de Información II (Enfoque ERP)</h4>
+    </div>
+
+    <div class="cover-body">
+      <div class="cover-badge">Informe Técnico & Académico Final</div>
+      <h1 class="cover-title">PRORRIDRE SMART ERP & DASHBOARD EJECUTIVO</h1>
+      <p class="cover-subtitle">
+        Diseño, Implementación y Análisis Arquitectónico de un Sistema Integrado de Planificación de Recursos (ERP), Business Intelligence (BI) y Resiliencia On-Premise para el Programa Regional de Riego y Drenaje (PRORRIDRE — GORE Puno).
+      </p>
+    </div>
+
+    <div class="cover-footer">
+      <div>
+        <div><strong>Área de Aplicación:</strong> Sector Público / Obras Hidráulicas</div>
+        <div><strong>Entidad:</strong> PRORRIDRE — Gobierno Regional de Puno</div>
+        <div><strong>Tecnologías:</strong> FastAPI, SQLite, WebSockets, Three.js, Chart.js</div>
+      </div>
+      <div style="text-align: right;">
+        <div><strong>Fecha:</strong> Octubre 2026</div>
+        <div><strong>Estado del Sistema:</strong> 100% Operativo On-Premise LAN</div>
+        <div><strong>Versión:</strong> 2.1.0 Enterprise</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECCIÓN 1: RESUMEN EJECUTIVO ==================== -->
+  <h1>1. Resumen Ejecutivo e Introducción</h1>
+  <p>
+    El presente informe documenta de manera integral el desarrollo, fundamentos teóricos y funcionamiento operativo del sistema <strong>PRORRIDRE Smart Dashboard & Network Digital Twin</strong>. Este proyecto surge como respuesta técnica y estratégica a los desafíos que enfrenta el <strong>Programa Regional de Riego y Drenaje (PRORRIDRE)</strong> del Gobierno Regional de Puno, entidad encargada de la formulación, ejecución y supervisión de megaproyectos de infraestructura hidráulica en el altiplano peruano.
+  </p>
+  <p>
+    Históricamente, la gestión en entidades públicas regionales adolece de <em>silos de información</em> desarticulados: los avances de obras se gestionan en cuadernos de campo u hojas dispersas, los requerimientos de materiales tardan en conciliarse con el Sistema Integrado de Gestión Administrativa (SIGA), la ejecución financiera reportada en el Sistema Integrado de Administración Financiera (SIAF) presenta desfases con el avance físico real, y el Sistema de Gestión Documental (SGD) sufre cuellos de botella por falta de priorización técnica. A todo ello se suma un factor crítico de infraestructura: las continuas caídas del enlace de Internet provisto por los operadores comerciales en la región Puno, lo cual paraliza las operaciones basadas en la nube.
+  </p>
+  <div class="callout callout-success">
+    <strong>Propósito Central de la Solución:</strong> Proporcionar una plataforma unificada basada en los principios rectores de un <strong>ERP (Enterprise Resource Planning)</strong> que centralice el flujo de datos institucionales, brinde visibilidad ejecutiva en tiempo real mediante Business Intelligence, y garantice la continuidad operativa mediante una arquitectura On-Premise resiliente en Red LAN a 1000 Mbps.
+  </div>
+
+  <!-- ==================== SECCIÓN 2: FUNDAMENTACIÓN ERP ==================== -->
+  <h1>2. Fundamentación: ¿Cómo está basado el Sistema en un ERP?</h1>
+  <p>
+    Un <strong>Sistema de Planificación de Recursos Empresariales (ERP)</strong> es una plataforma de software modular e integrada cuyo objetivo es gestionar y articular la totalidad de los procesos de negocio de una organización alrededor de un <strong>único repositorio de datos canónico</strong>.
+  </p>
+  <p>
+    En el contexto del sector público y de la ingeniería de sistemas, este desarrollo adopta la arquitectura funcional y lógica de un ERP gubernamental (G-ERP), integrando de forma transversal los recursos financieros, materiales, humanos, documentarios y tecnológicos:
+  </p>
+
+  <div class="grid-erp">
+    <div class="card-erp">
+      <h4>💰 1. Módulo Financiero y Presupuestal</h4>
+      <p>
+        Monitorea el ciclo del gasto público en base al <strong>PIM (Presupuesto Institucional Modificado) de S/ 45,637,342</strong>. Controla las fases de Certificación, Compromiso, Devengado y Girado, calculando saldos disponibles y ratios de ejecución frente a la meta anual.
+      </p>
+    </div>
+    <div class="card-erp">
+      <h4>🏗️ 2. Módulo de Obras y Proyectos (PM)</h4>
+      <p>
+        Controla la cartera de <strong>8 proyectos de irrigación</strong> en Puno (Lampa, Huancané, Azángaro, Cabanillas, Juli, Ayaviri, etc.), comparando el <em>Avance Físico real</em> versus el <em>Avance Financiero</em> para detectar oportunamente desvíos y obras paralizadas.
+      </p>
+    </div>
+    <div class="card-erp">
+      <h4>📦 3. Cadena de Suministro y Kardex</h4>
+      <p>
+        Gestiona el inventario de almacén central (cemento tipo IP, combustible D2, tuberías HDPE, geomembrana). Emite alertas automáticas de reposición (Stock Mínimo) y vincula las <strong>Órdenes de Compra (OC)</strong> directamente con las obras requirentes.
+      </p>
+    </div>
+    <div class="card-erp">
+      <h4>🚜 4. Gestión de Activos Fijos (EAM)</h4>
+      <p>
+        Control del ciclo de vida de bienes institucionales: <strong>15 unidades de maquinaria pesada</strong> (excavadoras, tractores) con horómetros y mantenimiento preventivo, y <strong>43 estaciones informáticas</strong> con auditoría de obsolescencia de sistemas operativos.
+      </p>
+    </div>
+    <div class="card-erp">
+      <h4>📄 5. Gestión Documental y Workflows (SGD)</h4>
+      <p>
+        Articula la correspondencia oficial mediante un embudo de trámite documentario. Implementa un motor de priorización automática: <strong>Muy Urgente (MU)</strong>, <strong>Urgente (U)</strong> y <strong>Normal (N)</strong>, evitando retrasos en valorizaciones y adendas.
+      </p>
+    </div>
+    <div class="card-erp">
+      <h4>🖥️ 6. Infraestructura y Resiliencia ERP</h4>
+      <p>
+        Garantiza la alta disponibilidad del ERP implementando el concepto de <em>Local-First / On-Premise LAN</em>. Los servicios corren en el servidor institucional `SRV-PRORRIDRE-01`, permitiendo que las áreas sigan operando aun cuando el enlace WAN a Internet sufra caídas prolongadas.
+      </p>
+    </div>
+  </div>
+
+  <div class="diagram-box">
+======================= ARQUITECTURA DE INTEGRACIÓN ERP PRORRIDRE =======================
+  [ USUARIOS / ROLES ]  --> Directivos · Residentes de Obra · Abastecimiento · Administradores TI
+           │
+           ▼
+  [ CAPA DE PRESENTACIÓN ] -> Single Page Dashboard (HTML5 / Vanilla CSS / Glassmorphism)
+           │                  Chart.js (BI Presupuestal) · Three.js (Digital Twin 3D)
+           ▼
+  [ CAPA DE SERVICIOS API ]-> FastAPI RESTful Core (Python Asincrónico) + WebSockets Telemetría
+           │
+ ┌─────────┼───────────────────────────┬───────────────────────────┬────────────────────┐
+ │         ▼                           ▼                           ▼                    ▼
+ │   [MOD. PRESUPUESTO]         [MOD. LOGÍSTICA]             [MOD. PROYECTOS]     [MOD. SGD DOC]
+ │   PIM S/ 45.6M               Stock Kardex & O.C.          8 Obras Riego        Flujo Expedientes
+ │   Devengado vs. Saldo        Alertas Materiales           Físico vs. Financ.   Reglas MU / U / N
+ └─────────┬───────────────────────────┴───────────────────────────┴────────────────────┘
+           ▼
+  [ REPOSITORIO DE DATOS ] --> SQLite Relacional Embebido (prorridre.db) + Respaldo NAS Synology
+=========================================================================================
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECCIÓN 3: ARQUITECTURA TÉCNICA ==================== -->
+  <h1>3. Arquitectura Tecnológica y Componentes del Sistema</h1>
+  <p>
+    La solución fue concebida bajo estrictos estándares de ingeniería de software orientados a la soberanía tecnológica, minimizando la latencia y eliminando dependencias de CDN externas para asegurar funcionamiento 100% autónomo.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 20%;">Capa</th>
+        <th style="width: 25%;">Tecnología</th>
+        <th style="width: 55%;">Función Principal y Justificación Técnica</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Backend API</strong></td>
+        <td>Python 3.10 + FastAPI</td>
+        <td>Framework de alto rendimiento basado en Starlette y Pydantic. Expone endpoints RESTful asíncronos y gestiona la lógica de negocio y validación de esquemas en milisegundos.</td>
+      </tr>
+      <tr>
+        <td><strong>Base de Datos</strong></td>
+        <td>SQLite 3 Relacional</td>
+        <td>Motor ACID ligero y autocontenido (`prorridre.db`). Cero configuración externa, alta portabilidad, almacenamiento transaccional para usuarios, métricas, obras, expedientes, órdenes y alertas.</td>
+      </tr>
+      <tr>
+        <td><strong>Canal Tiempo Real</strong></td>
+        <td>WebSockets nativos</td>
+        <td>Canal dúplex persistente (`/ws/telemetria`) que transmite el estado de los 86 nodos de red, latencia, saltos lógicos y tráfico broadcast a 60 paquetes por segundo sin sobrecargar el servidor.</td>
+      </tr>
+      <tr>
+        <td><strong>Frontend & UI</strong></td>
+        <td>HTML5 + CSS3 Vanilla</td>
+        <td>Interfaz reactiva sin sobrecarga de frameworks pesados. Sistema de variables CSS, modo oscuro institucional, diseño adaptable a dispositivos móviles y estaciones de trabajo.</td>
+      </tr>
+      <tr>
+        <td><strong>Gráficos BI</strong></td>
+        <td>Chart.js (Local Vendor)</td>
+        <td>Generación de curvas de ejecución presupuestal acumulada, distribución porcentual mediante donut interactivo y embudo de estados del trámite documentario.</td>
+      </tr>
+      <tr>
+        <td><strong>Gemelo Digital 3D</strong></td>
+        <td>Three.js + WebGL</td>
+        <td>Simulación tridimensional interactiva de la topología física del PRORRIDRE: Rack MDF de 42U, switches Cisco, cableado estructurado Cat 6 y estaciones de las 4 direcciones.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECCIÓN 4: FUNCIONAMIENTO DE LOS MÓDULOS ==================== -->
+  <h1>4. Desglose Funcional de Módulos del Dashboard</h1>
+
+  <h2>4.1. Módulo de Autenticación y Control de Accesos por Roles (RBAC)</h2>
+  <p>
+    El sistema implementa seguridad basada en roles (Role-Based Access Control - RBAC). La pantalla de acceso (`index.html`) valida las credenciales institucionales contra la base de datos y adapta la experiencia del usuario según su nivel de privilegio:
+  </p>
+  <ul>
+    <li><strong>Directivo (Director Ejecutivo):</strong> Acceso irrestricto a KPIs presupuestales, semáforos de obras, aprobación de adendas y generación de reportes ejecutivos consolidados.</li>
+    <li><strong>Residente de Obra:</strong> Registro de valorizaciones, actualización de porcentajes de avance físico y requerimiento urgente de insumos de construcción.</li>
+    <li><strong>Abastecimiento / Logística:</strong> Gestión del inventario de almacén central, emisión de órdenes de compra y fiscalización de stock mínimo de seguridad.</li>
+    <li><strong>TI Admin:</strong> Monitoreo de la red LAN, diagnóstico de switches, ejecución de copias de seguridad al NAS y control de vulnerabilidades del parque informático.</li>
+  </ul>
+
+  <h2>4.2. Vista Ejecutiva (Business Intelligence)</h2>
+  <p>
+    Diseñada para la toma de decisiones gerenciales en menos de 5 segundos. Centraliza:
+  </p>
+  <ul>
+    <li><strong>Tarjetas KPI:</strong> Muestran el Presupuesto Total (S/ 45.6M), el porcentaje ejecutado consolidado (63.2%), la cantidad de obras en curso (5 en ejecución, 1 paralizada, 2 liquidadas) y el volumen de expedientes diarios.</li>
+    <li><strong>Gráfica de Ejecución Presupuestal Mensual:</strong> Comparativa lineal del PIM respecto al gasto mensual acumulado de enero a octubre.</li>
+    <li><strong>Gráfica de Distribución Donut:</strong> Desglose visual entre saldo ejecutado (63%), saldo comprometido (22%) y saldo por ejecutar (15%).</li>
+    <li><strong>Embudo de Expedientes SGD:</strong> Flujo de documentos desde su recepción en Mesa de Partes hasta su derivación o aprobación final.</li>
+  </ul>
+
+  <div class="callout callout-warning">
+    <strong>Caso de Alerta Detectado por el BI:</strong> El proyecto <em>"Riego Tecnificado Azángaro - Asillo"</em> presenta una ejecución financiera del 35% pero su avance físico se encuentra estancado en 32% (Paralizada), alertando inmediatamente a la Dirección para tomar acciones correctivas antes de incurrir en penalidades.
+  </div>
+
+  <div class="page-break"></div>
+
+  <h2>4.3. Módulo de Logística, Obras y Gestión de Recursos</h2>
+  <p>
+    Este módulo materializa la filosofía ERP al integrar cuatro subdimensiones interconectadas mediante pestañas dinámicas:
+  </p>
+  <ol>
+    <li>
+      <strong>Subpestaña Proyectos / Obras:</strong> Ficha técnica de cada obra con georreferenciación (latitud/longitud en Puno), presupuesto asignado, monto ejecutado a la fecha, ingeniero residente a cargo y semáforo de criticidad (Normal, Alerta o Crítica).
+    </li>
+    <li>
+      <strong>Subpestaña Almacén y Stock:</strong> Kardex digitalizado que alerta en tiempo real cuando materiales estratégicos (como bolsas de Cemento Portland Tipo IP o tuberías de polietileno de alta densidad HDPE) caen por debajo del umbral mínimo de seguridad.
+    </li>
+    <li>
+      <strong>Subpestaña Órdenes de Compra:</strong> Registro trazable de transacciones comerciales vinculadas con proveedores locales y códigos SIAF/SIGA, detallando su estatus (Pendiente, Aprobada, En Tránsito, Entregada).
+    </li>
+    <li>
+      <strong>Subpestaña Activos Fijos (EAM):</strong> 
+      Inventario de 15 maquinarias pesadas (excavadoras sobre orugas, retroexcavadoras, camiones volquete) con programación de mantenimientos por horas de motor, y auditoría de 43 computadoras institucionales clasificadas por sistema operativo.
+    </li>
+  </ol>
+
+  <h2>4.4. Módulo de Infraestructura TI y Digital Twin 3D</h2>
+  <p>
+    Representa una de las innovaciones más destacadas del proyecto. Debido a la vulnerabilidad geográfica de Puno ante tempestades y caídas de fibra óptica comercial, este módulo audita la capa física y lógica de telecomunicaciones:
+  </p>
+  <ul>
+    <li><strong>Diagnóstico de Cable de Red RJ45 en Vivo:</strong> Identifica si la estación del usuario está conectada físicamente por cable UTP Cat 6 a 1000 Mbps Full Duplex o mediante Wi-Fi inestable, notificando el estado del puerto en el Switch Core.</li>
+    <li><strong>Gemelo Digital 3D (Three.js WebGL):</strong> Modelo tridimensional navegable que recrea el Centro de Cómputo (MDF Rack 42U), los switches Cisco SG350 y SG250, el cableado horizontal y las 43 estaciones de trabajo distribuidas en 4 oficinas (Dirección Ejecutiva, Obras, Abastecimiento y TI).</li>
+    <li><strong>Simulador de Tormenta de Broadcast y Bucle de Red:</strong> Permite simular una desconexión accidental o un switching loop generado por patch-cords sin protocolo STP/BPDU Guard, habilitando el aislamiento de puertos con un solo clic.</li>
+    <li><strong>Detección de Brechas de Seguridad (Windows 7 EoL):</strong> Localiza automáticamente las 12 estaciones de trabajo obsoletas que aún operan con Windows 7, marcándolas con alertas rojas de riesgo y recomendando su migración a Windows 11.</li>
+  </ul>
+
+  <h2>4.5. Emulador de Flujo Institucional (SGD & SIAF)</h2>
+  <p>
+    Permite poner a prueba la carga transaccional del sistema mediante un motor de simulación sintética:
+  </p>
+  <ul>
+    <li><strong>Simulación de Trámite Documentario (SGD):</strong> Inyecta ráfagas de 15 a 20 expedientes con asuntos reales de PRORRIDRE, clasificándolos automáticamente mediante heurísticas institucionales:
+      <span class="badge badge-red">MU</span> (Muy Urgente: valorizaciones, combustible, adendas), 
+      <span class="badge badge-amber">U</span> (Urgente: mantenimientos, informes técnicos), y 
+      <span class="badge badge-green">N</span> (Normal: solicitudes de vacaciones, memorandos informativos).
+    </li>
+    <li><strong>Simulación de Devengado SIAF:</strong> Recalcula de forma instantánea el saldo presupuestal y actualiza las métricas en cascada a través de todos los módulos del ERP.</li>
+  </ul>
+
+  <h2>4.6. Asistente Inteligente On-Premise (IA Local)</h2>
+  <p>
+    Un agente conversacional interactivo embebido en el servidor local que no requiere conexión a Internet ni APIs comerciales en la nube. Está entrenado con la base de conocimiento institucional de PRORRIDRE y es capaz de responder consultas directas sobre:
+  </p>
+  <ul>
+    <li>Saldos y metas del PIM 2026.</li>
+    <li>Situación y residentes a cargo de las 8 obras de irrigación.</li>
+    <li>Protocolos de contingencia ante caídas del enlace de Internet y funcionamiento de la LAN Gigabit.</li>
+    <li>Recomendaciones de arquitectura y mitigación de riesgos del servidor único `SRV-PRORRIDRE-01`.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== SECCIÓN 5: COMPARATIVA Y BENEFICIOS ==================== -->
+  <h1>5. Matriz Comparativa: Situación Anterior vs. Sistema ERP PRORRIDRE</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Dimensión</th>
+        <th style="width: 35%;">Gestión Tradicional (Sin ERP Integrado)</th>
+        <th style="width: 40%;">Con el Sistema PRORRIDRE Smart ERP</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Visibilidad Presupuestal</strong></td>
+        <td>Consultas aisladas al SIAF cada fin de mes con desfase de información.</td>
+        <td>Monitoreo en tiempo real con gráficas interactivas y cálculo automatizado de saldos.</td>
+      </tr>
+      <tr>
+        <td><strong>Supervisión de Obras</strong></td>
+        <td>Informes físicos mensuales en papel; detección tardía de obras paralizadas.</td>
+        <td>Semáforo de obras, avance físico vs. financiero y alertas automáticas de desvíos.</td>
+      </tr>
+      <tr>
+        <td><strong>Control de Almacén</strong></td>
+        <td>Quiebres de stock imprevistos de materiales críticos (cemento, combustible).</td>
+        <td>Kardex sincronizado con alertas tempranas y vinculación directa a órdenes de compra.</td>
+      </tr>
+      <tr>
+        <td><strong>Trámite Documentario</strong></td>
+        <td>Expedientes estancados en bandejas de entrada sin criterio de criticidad.</td>
+        <td>Clasificación automática MU/U/N, cálculo de días de trámite y control de plazos legales.</td>
+      </tr>
+      <tr>
+        <td><strong>Resiliencia ante Caídas</strong></td>
+        <td>Paralización total de labores administrativas al caer el enlace a Internet.</td>
+        <td>Continuidad del 100% en Red LAN a 1000 Mbps gracias al servidor On-Premise.</td>
+      </tr>
+      <tr>
+        <td><strong>Soporte a Decisiones</strong></td>
+        <td>Consolidación manual de reportes que tomaba varios días de trabajo.</td>
+        <td>Generación de resúmenes ejecutivos e informes en un solo clic para el GORE Puno.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== SECCIÓN 6: CONCLUSIONES ==================== -->
+  <h1>6. Conclusiones y Recomendaciones Académicas</h1>
+  <ol>
+    <li>
+      <strong>Validación del Enfoque ERP en el Sector Público:</strong> La implementación demostró que los principios de integración de datos, modularidad funcional y repositorio centralizado propios de un ERP resuelven de forma contundente la desarticulación operativa de una entidad ejecutora de obras hidráulicas como PRORRIDRE.
+    </li>
+    <li>
+      <strong>Eficiencia y Soberanía Tecnológica:</strong> El uso de tecnologías ligeras y modernas (FastAPI, SQLite, WebSockets y Vanilla Web) permitió prescindir de licencias propietarias onerosas y garantiza una tasa de refresco instantánea incluso en computadoras con hardware modesto.
+    </li>
+    <li>
+      <strong>Resiliencia Crítica Frente a la Brecha Digital:</strong> El diseño <em>Local-First / On-Premise</em> resuelve uno de los problemas más agudos de las instituciones del interior del país: la dependencia de enlaces de Internet inestables. Las dependencias del PRORRIDRE pueden seguir gestionando obras y logística sin interrupción.
+    </li>
+    <li>
+      <strong>Recomendación de Escalabilidad Futura:</strong> Se sugiere en una siguiente fase técnica incorporar un esquema de respaldo activo-pasivo (alta disponibilidad HA) con un segundo servidor físico y configurar un enlace de contingencia celular 4G/5G con conmutación automática por fallo (failover).
+    </li>
+  </ol>
+
+  <div style="margin-top: 35px; border-top: 1px solid #cbd5e1; padding-top: 15px; display: flex; justify-content: space-between; font-size: 8.5pt; color: #64748b;">
+    <div>PRORRIDRE SRP — Sistema de Monitoreo Inteligente & ERP Core</div>
+    <div>Gobierno Regional de Puno · Tópicos en Sistemas de Información II</div>
+    <div>Página de Cierre</div>
+  </div>
+
+</body>
+</html>

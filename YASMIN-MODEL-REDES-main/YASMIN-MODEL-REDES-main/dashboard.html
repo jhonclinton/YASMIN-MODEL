@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PRORRIDRE Smart Dashboard Ejecutivo - Monitoreo de obras, logística, gestión documental y activos fijos">
+  <title>PRORRIDRE — Dashboard Inteligente</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="assets/logo.jpg" type="image/jpeg">
+  <!-- Vendor libraries (100% Offline / On-Premise LAN) -->
+  <script src="js/vendor/chart.umd.min.js"></script>
+  <script src="js/vendor/three.min.js"></script>
+  <script src="js/vendor/OrbitControls.js"></script>
+</head>
+<body>
+  <div class="dashboard-layout" id="dashLayout">
+
+    <!-- ═══════ SIDEBAR ═══════ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/logo.jpg" alt="Logo">
+        <div class="sidebar-brand-text">
+          <h2>PRORRIDRE</h2>
+          <span>Smart Dashboard v1.0</span>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Principal</div>
+        <ul class="sidebar-nav">
+          <li><a href="#" class="active" data-view="ejecutiva" id="nav-ejecutiva"><span class="nav-icon">📊</span> Vista Ejecutiva</a></li>
+          <li><a href="#" data-view="logistica" id="nav-logistica"><span class="nav-icon">🏗️</span> Logística y Proyectos <span class="nav-badge warning" id="badge-logistica">5</span></a></li>
+          <li><a href="#" data-view="infraestructura" id="nav-infraestructura"><span class="nav-icon">🖥️</span> Infraestructura TI <span class="nav-badge" id="badge-infra">3</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Herramientas Inteligentes</div>
+        <ul class="sidebar-nav">
+          <li><a href="#" data-view="alertas" id="nav-alertas"><span class="nav-icon">🔔</span> Centro de Alertas <span class="nav-badge" id="badge-alertas">9</span></a></li>
+          <li><a href="#" data-view="emulador" id="nav-emulador"><span class="nav-icon">⚡</span> Emulador SGD / SIAF</a></li>
+          <li><a href="#" data-view="asistente" id="nav-asistente"><span class="nav-icon">🤖</span> Asistente IA Local</a></li>
+          <li><a href="#" data-view="reportes" id="nav-reportes"><span class="nav-icon">📋</span> Resumen Ejecutivo</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Sistemas Externos</div>
+        <ul class="sidebar-nav">
+          <li><a href="#" onclick="alert('Enlace a SGD del GORE Puno')"><span class="nav-icon">📄</span> SGD — Gestión Documental</a></li>
+          <li><a href="#" onclick="alert('Enlace a SIGA')"><span class="nav-icon">📦</span> SIGA — Logística</a></li>
+          <li><a href="#" onclick="alert('Enlace a SIAF')"><span class="nav-icon">💰</span> SIAF — Finanzas</a></li>
+          <li><a href="http://192.168.1.100:8000" target="_blank"><span class="nav-icon">⚙️</span> ERPNext Local</a></li>
+        </ul>
+      </div>
+
+      <!-- Network Status -->
+      <div class="sidebar-status">
+        <div class="status-indicator status-offline" id="statusInternet">
+          <span class="dot"></span>
+          Internet: Caído (1h 32m)
+        </div>
+        <div class="status-indicator status-online" id="statusLAN">
+          <span class="dot"></span>
+          Red LAN: 1000 Mbps ✓
+        </div>
+        <div class="status-indicator status-local" id="statusERP">
+          <span class="dot"></span>
+          ERPNext: Modo Local
+        </div>
+      </div>
+
+      <!-- User Profile -->
+      <div class="sidebar-user" id="sidebarUser">
+        <div class="sidebar-user-avatar-placeholder" id="userAvatarPlaceholder">CQ</div>
+        <div class="sidebar-user-info">
+          <div class="name" id="userName">Cargando...</div>
+          <div class="role" id="userRole">—</div>
+        </div>
+        <button class="logout-btn" onclick="Auth.logout()" title="Cerrar sesión">🚪</button>
+      </div>
+    </aside>
+
+    <!-- ═══════ MAIN AREA ═══════ -->
+    <div style="display:contents">
+
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle" onclick="toggleSidebar()">☰</button>
+          <div>
+            <h1 id="pageTitle">Vista Ejecutiva</h1>
+            <div class="topbar-breadcrumb">PRORRIDRE › Dashboard › <span id="breadcrumb">Resumen General</span></div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="mode-local-banner visible" id="modeBanner">
+            ⚡ Modo Local Activo (LAN)
+          </div>
+          <div class="topbar-time" id="clockDisplay">--:--:--</div>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <main class="main-content">
+
+        <!-- ═══════════════════════════════
+             VIEW: EJECUTIVA
+             ═══════════════════════════════ -->
+        <section class="view-panel active" id="view-ejecutiva">
+
+          <!-- KPI Row -->
+          <div class="kpi-grid" id="kpiGrid">
+            <!-- Filled by JS -->
+          </div>
+
+          <!-- Charts Row -->
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <h3>📈 Ejecución Presupuestal Mensual</h3>
+                <span class="subtitle">PIM S/ 45,637,342</span>
+              </div>
+              <div class="chart-container">
+                <canvas id="chartEjecucion"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3>🎯 Distribución del Presupuesto</h3>
+                <span class="subtitle">Ejecutado vs. Comprometido vs. Por Ejecutar</span>
+              </div>
+              <div class="chart-container" style="height:240px; display:flex; align-items:center; justify-content:center;">
+                <canvas id="chartDonut"></canvas>
+                <div class="donut-center">
+                  <div class="value" id="donutPct">63%</div>
+                  <div class="label">Avance</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerts + Expedientes -->
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <h3>🚨 Alertas Prioritarias</h3>
+                <button class="btn btn-sm btn-ghost" onclick="switchView('alertas')">Ver todas →</button>
+              </div>
+              <div class="alert-list" id="alertPreview">
+                <!-- Filled by JS -->
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3>📄 Embudo de Expedientes (SGD)</h3>
+                <span class="subtitle">Hoy: <strong id="expHoy">18</strong> expedientes</span>
+              </div>
+              <div class="chart-container" style="height:220px;">
+                <canvas id="chartFunnel"></canvas>
+              </div>
+              <div style="margin-top:0.8rem;">
+                <table class="data-table" id="expTable">
+                  <thead>
+                    <tr><th>Expediente</th><th>Asunto</th><th>Días</th><th>Tipo</th></tr>
+                  </thead>
+                  <tbody id="expTableBody">
+                    <!-- Filled by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Obras Preview -->
+          <div class="card">
+            <div class="card-header">
+              <h3>🏗️ Estado de Obras de Riego y Drenaje</h3>
+              <button class="btn btn-sm btn-ghost" onclick="switchView('logistica')">Ver detalle →</button>
+            </div>
+            <div class="obras-grid" id="obrasPreview">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             VIEW: LOGÍSTICA Y PROYECTOS
+             ═══════════════════════════════ -->
+        <section class="view-panel" id="view-logistica">
+
+          <!-- Sub-tabs -->
+          <div class="view-tabs">
+            <button class="view-tab active" data-subtab="proyectos" onclick="switchSubTab(this,'logistica')">🏗️ Proyectos / Obras</button>
+            <button class="view-tab" data-subtab="almacen" onclick="switchSubTab(this,'logistica')">📦 Almacén y Stock</button>
+            <button class="view-tab" data-subtab="compras" onclick="switchSubTab(this,'logistica')">🛒 Órdenes de Compra</button>
+            <button class="view-tab" data-subtab="activos" onclick="switchSubTab(this,'logistica')">🖥️ Activos Fijos</button>
+          </div>
+
+          <!-- Subtab: Proyectos -->
+          <div class="view-panel active" id="subtab-proyectos">
+            <div class="kpi-grid">
+              <div class="kpi-card blue">
+                <div class="kpi-icon">🏗️</div>
+                <div class="kpi-label">Total Obras</div>
+                <div class="kpi-value blue">8</div>
+                <div class="kpi-sub">Región Puno 2026</div>
+              </div>
+              <div class="kpi-card green">
+                <div class="kpi-icon">▶️</div>
+                <div class="kpi-label">En Ejecución</div>
+                <div class="kpi-value green">5</div>
+                <div class="kpi-sub">Avance promedio: 61.4%</div>
+              </div>
+              <div class="kpi-card red">
+                <div class="kpi-icon">⏸️</div>
+                <div class="kpi-label">Paralizadas</div>
+                <div class="kpi-value red">1</div>
+                <div class="kpi-sub">Canal Irrigación Ayaviri</div>
+              </div>
+              <div class="kpi-card green">
+                <div class="kpi-icon">✅</div>
+                <div class="kpi-label">Finalizadas</div>
+                <div class="kpi-value green">2</div>
+                <div class="kpi-sub">100% liquidadas</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>📋 Detalle de Obras</h3>
+              </div>
+              <div class="obras-grid" id="obrasFullGrid">
+                <!-- Filled by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Subtab: Almacén -->
+          <div class="view-panel" id="subtab-almacen">
+            <div class="card">
+              <div class="card-header">
+                <h3>📦 Inventario de Almacén — Stock Actual</h3>
+                <span class="subtitle">Materiales e insumos para obras</span>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr><th>Código</th><th>Material</th><th>Stock</th><th>Mín.</th><th>Estado</th><th>Proyecto</th></tr>
+                </thead>
+                <tbody id="almacenTableBody">
+                  <!-- Filled by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Subtab: Compras -->
+          <div class="view-panel" id="subtab-compras">
+            <div class="card">
+              <div class="card-header">
+                <h3>🛒 Órdenes de Compra Pendientes</h3>
+                <span class="subtitle">SIGA / ERPNext</span>
+              </div>
+              <table class="data-table">
+                <thead>
+                  <tr><th>Nro. OC</th><th>Descripción</th><th>Monto</th><th>Estado</th><th>Fecha</th><th>Proveedor</th></tr>
+                </thead>
+                <tbody id="comprasTableBody">
+                  <!-- Filled by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Subtab: Activos Fijos -->
+          <div class="view-panel" id="subtab-activos">
+            <div class="grid-2">
+              <div class="card">
+                <div class="card-header">
+                  <h3>💻 Parque Informático</h3>
+                  <span class="subtitle">43 computadoras</span>
+                </div>
+                <div class="chart-container" style="height:220px;">
+                  <canvas id="chartPCs"></canvas>
+                </div>
+
+                <!-- AI Recommendation -->
+                <div class="ai-recommendation mt-2">
+                  <div class="ai-icon">🤖</div>
+                  <div class="ai-text">
+                    <h4>Recomendación IA: Renovación Urgente</h4>
+                    <p>Se detectaron <strong>12 computadoras con Windows 7</strong> (sin soporte desde 2020). Riesgo de seguridad y compatibilidad con SGD/SIGA. Se recomienda migración a Windows 11.</p>
+                    <div class="ai-savings">💡 Ahorro estimado en soporte técnico: S/ 18,000/año</div>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                  <h3>🚜 Maquinaria de Obra</h3>
+                  <span class="subtitle">15 unidades</span>
+                </div>
+                <div class="chart-container" style="height:220px;">
+                  <canvas id="chartMaquinaria"></canvas>
+                </div>
+
+                <div class="ai-recommendation mt-2">
+                  <div class="ai-icon">🤖</div>
+                  <div class="ai-text">
+                    <h4>Mantenimiento Preventivo Programado</h4>
+                    <p>4 maquinarias requieren servicio este mes. Basado en horas de operación y ciclos de mantenimiento, se recomienda atención prioritaria a excavadoras (>2,000 hrs).</p>
+                    <div class="ai-savings">💡 Reducción de fallos no planificados: ~35%</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             VIEW: INFRAESTRUCTURA TI
+             ═══════════════════════════════ -->
+        <section class="view-panel" id="view-infraestructura">
+
+          <!-- 🔌 CABLE DIAGNOSTIC & HOST COMPUTER IDENTIFICATION -->
+          <div class="cable-diagnostic-banner" id="cableBanner">
+            <div class="cable-status-header">
+              <div class="cable-icon-badge">
+                <div class="pulse-cable" id="cableIcon">🔌</div>
+                <div>
+                  <h3 style="margin:0; font-size:1.15rem; color:#fff; display:flex; align-items:center; gap:8px;">
+                    Cable de Red Conectado: <span id="cableHostStatusText" style="color:#34d399;">Ethernet RJ45 (1000 Mbps Gigabit)</span>
+                  </h3>
+                  <span style="font-size:0.8rem; color:var(--c-text-secondary);" id="cableHostSubtitle">
+                    Identificado en tu computadora · Conexión directa a Switch Core de Oficinas PRORRIDRE
+                  </span>
+                </div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-primary" onclick="diagnosticarCableMiEquipo()" id="btnDiagCable">
+                  ⚡ Diagnosticar Cable y Ping
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="toggleSimularFallaInternet()" id="btnToggleFalla">
+                  🚨 Simular Falla de Internet (Bucle 2h)
+                </button>
+              </div>
+            </div>
+
+            <div class="cable-metrics-grid">
+              <div class="cable-metric-item">
+                <div class="label">Tarjeta / Interfaz</div>
+                <div class="val" id="diagInterfaz">Ethernet GbE Controller</div>
+              </div>
+              <div class="cable-metric-item">
+                <div class="label">Tipo de Cable</div>
+                <div class="val" id="diagTipoCable">UTP Cat 6 / RJ45</div>
+              </div>
+              <div class="cable-metric-item">
+                <div class="label">Velocidad del Enlace</div>
+                <div class="val" id="diagVelocidad" style="color:#34d399;">1000 Mbps (Full Duplex)</div>
+              </div>
+              <div class="cable-metric-item">
+                <div class="label">IP Local Asignada</div>
+                <div class="val" id="diagIp" style="font-family:var(--font-mono); color:#93c5fd;">192.168.0.10</div>
+              </div>
+              <div class="cable-metric-item">
+                <div class="label">Switch y Puerto Asignado</div>
+                <div class="val" id="diagSwitchPort">Switch Core (GbE-12)</div>
+              </div>
+              <div class="cable-metric-item">
+                <div class="label">Estado de Internet</div>
+                <div class="val" id="diagInternetStatus" style="color:#34d399;">🟢 Enlace Activo</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🌐 THREE.JS 3D STRUCTURED CABLING & NETWORK DIGITAL TWIN -->
+          <div class="card mb-3" style="position: relative; overflow: hidden;">
+            <div class="card-header">
+              <div>
+                <h3>🌐 Topología 3D en Tiempo Real — Network Digital Twin PRORRIDRE</h3>
+                <span class="subtitle">Inventario institucional georreferenciado por oficina y piso · edificio de 7 niveles</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-sm btn-success" id="btnConectarPcModal" onclick="window.abrirModalNuevoDispositivo()" style="background:#10b981; border-color:#059669; font-weight:700; box-shadow:0 0 14px rgba(16,185,129,0.35);">
+                  ➕ Agregar equipo
+                </button>
+                <button class="btn btn-sm btn-primary" id="btnRunIpScan" onclick="window.cargarTablaAdvancedIpScanner()">
+                  ↻ Actualizar inventario
+                </button>
+                <button class="btn btn-sm btn-danger" id="btnSimularBucle" onclick="simularBucleRedAccion()" title="Simula bucle físico de patch-cords sin BPDU Guard">
+                  🚨 Simular Bucle de Red (2h)
+                </button>
+                <button class="btn btn-sm btn-ghost" id="btnToggleSimDemo" onclick="toggleModoDemoCable()">
+                  🔌 Alternar Modo Simulación / Físico
+                </button>
+                <span class="badge badge-primary" id="net3dEngineBadge">WebGL / Three.js 60 FPS</span>
+              </div>
+            </div>
+
+            <div id="network3dContainer" style="position: relative; width: 100%; height: 560px; background: #060914; border-radius: 12px; overflow: hidden; border: 1px solid rgba(59, 130, 246, 0.25);">
+              
+              <!-- ESTADO CONDICIONAL BLOQUEADO (ESPERANDO CABLE ETHERNET) -->
+              <div id="net3dLockScreen" style="position: absolute; inset: 0; background: rgba(6, 9, 20, 0.94); backdrop-filter: blur(16px); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center;">
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px dashed #ef4444; display: flex; align-items: center; justify-content: center; font-size: 38px; margin-bottom: 1.25rem;">
+                  🔌
+                </div>
+                <h3 id="net3dLockTitle" style="color: #fff; font-size: 1.3rem; margin-bottom: 0.5rem; font-weight: 700;">
+                  Esperando conexión por cable Ethernet...
+                </h3>
+                <p id="net3dLockReason" style="max-width: 520px; color: var(--c-text-secondary); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                  ⚠️ Detectada conexión inalámbrica Wi-Fi activa (802.11) o cable de red desconectado. Por requerimientos de telemetría de baja latencia e integridad física de canal, conecte el cable RJ45 a su laptop para activar el entorno 3D.
+                </p>
+                <button class="btn btn-primary" onclick="toggleModoDemoCable()" style="box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);">
+                  🔌 Simular Conexión Cable Ethernet (Modo Demo)
+                </button>
+              </div>
+
+              <!-- HUD DE TELEMETRÍA 3D (OVERLAY FLOTANTE) -->
+              <div id="net3dHud" style="position: absolute; top: 16px; left: 16px; z-index: 5; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 10px; padding: 12px 16px; font-size: 11.5px; color: #fff; display: flex; flex-direction: column; gap: 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); pointer-events: none; display: none;">
+                <div style="font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+                  📡 TELEMETRÍA & DIGITAL TWIN EN VIVO (WEBSOCKETS)
+                </div>
+                <div>⚡ Latencia al Origen: <span id="hudLatency" style="color: #34d399; font-weight: bold;">-- ms</span></div>
+                <div>🌐 Gateway LAN: <span id="hudGateway" style="color: #93c5fd; font-family: var(--font-mono);">192.168.1.1</span></div>
+                <div>📦 Saltos Lógicos: <span id="hudHops" style="color: #fbbf24; font-weight: bold;">4 Saltos</span></div>
+                <div>🔌 Enlace Físico: <span id="hudSpeed" style="color: #34d399;">1000 Mbps Gigabit</span></div>
+                <div>📊 Tormenta Broadcast: <span id="hudBroadcastPps" style="color: #38bdf8; font-weight: bold;">35 pps</span></div>
+                <div style="border-top:1px solid rgba(255,255,255,0.1); padding-top:4px; margin-top:2px; font-size:10.5px; color:#cbd5e1;">
+                  🖥️ <span style="color:#f87171; font-weight:bold;">12 Win7 EoL</span> · 25 Win10 · 6 Win11 · 26 Impresoras
+                </div>
+                <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">
+                  💡 Arrastra para rotar · Rueda para zoom
+                </div>
+              </div>
+
+              <!-- 🔍 BUSCADOR INTELIGENTE DE ENTIDADES Y DISPOSITIVOS EN EL DIGITAL TWIN 3D -->
+              <div id="net3dSearchContainer" style="position: absolute; top: 16px; left: 50%; transform: translateX(-50%); z-index: 22; width: 440px; max-width: calc(100% - 32px);">
+                <div style="position: relative; display: flex; align-items: center;">
+                  <span style="position: absolute; left: 14px; color: #38bdf8; font-size: 14px; pointer-events: none;">🔍</span>
+                  <input type="text" id="net3dSearchInput" placeholder="Buscar por IP, Hostname, MAC, Win7, Marca..." autocomplete="off"
+                         style="width: 100%; padding: 10px 38px 10px 38px; background: rgba(15, 23, 42, 0.92); border: 1px solid rgba(59, 130, 246, 0.5); border-radius: 24px; color: #fff; font-size: 12.5px; outline: none; backdrop-filter: blur(12px); box-shadow: 0 8px 24px rgba(0,0,0,0.6); transition: all 0.2s;"
+                         onfocus="this.style.borderColor='#38bdf8'; this.style.boxShadow='0 0 16px rgba(56,189,248,0.4)';"
+                         onblur="setTimeout(() => { const res = document.getElementById('net3dSearchResults'); if (res && !res.matches(':hover')) res.style.display='none'; }, 250);"
+                         oninput="window.buscarDispositivo3D(this.value)"
+                         onkeydown="if(event.key === 'Enter') window.seleccionarPrimerResultado3D();" />
+                  <button id="net3dSearchClear" onclick="window.limpiarBusqueda3D()" 
+                          title="Limpiar búsqueda"
+                          style="position: absolute; right: 12px; background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; display: none;">✕</button>
+                </div>
+                
+                <!-- Resultados del buscador desplegables -->
+                <div id="net3dSearchResults" style="display: none; position: absolute; top: 44px; left: 0; right: 0; max-height: 290px; overflow-y: auto; background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.85); backdrop-filter: blur(16px); padding: 6px; z-index: 23;">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+              <label class="network-floor-control" for="net3dFloorFilter">
+                <span>Nivel visible</span>
+                <select id="net3dFloorFilter">
+                  <option value="">Todos los niveles</option>
+                  <option value="1">Piso 1</option><option value="2">Piso 2</option>
+                  <option value="3">Piso 3</option><option value="4">Piso 4</option>
+                  <option value="5">Piso 5</option><option value="6">Piso 6</option>
+                  <option value="7">Piso 7</option>
+                </select>
+              </label>
+
+              <!-- MODAL FLOTANTE DE ALERTA DE BUCLE DE RED (SWITCHING LOOP) -->
+              <div id="switchingLoopModal" style="display:none; flex-direction:column; position:absolute; bottom:20px; right:20px; z-index:20; background:rgba(15,23,42,0.96); border:2px solid #ef4444; box-shadow:0 0 30px rgba(239,68,68,0.6); border-radius:12px; padding:16px 20px; max-width:440px; backdrop-filter:blur(16px); animation:pulseBorder 1.2s infinite alternate;">
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                  <span style="font-size:24px;">🚨</span>
+                  <div style="font-weight:800; font-size:14px; color:#f87171; text-transform:uppercase; letter-spacing:0.5px;">
+                    Alerta Crítica: Bucle de Red Detectado
+                  </div>
+                </div>
+                <div id="loopAlertDetails" style="font-size:12.5px; line-height:1.5; color:#cbd5e1; margin-bottom:12px;">
+                  <!-- Injected via JS -->
+                </div>
+                <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
+                  <button class="btn btn-sm btn-primary" onclick="aislarBucleRedAccion()" style="background:#10b981; border-color:#059669; font-weight:bold; box-shadow:0 0 12px rgba(16,185,129,0.4); padding:8px 16px;">
+                    🛡️ Aislar Puerto y Desactivar Bucle (STP)
+                  </button>
+                </div>
+              </div>
+
+              <!-- 🔍 MODAL INSPECTOR DE DISPOSITIVO 3D (RAYCASTING CLICK) -->
+              <div id="deviceInspectorModal" style="display:none; position:absolute; top:16px; right:16px; z-index:25; width:360px; background:rgba(15, 23, 42, 0.96); backdrop-filter:blur(16px); border:1px solid rgba(59, 130, 246, 0.45); box-shadow:0 12px 32px rgba(0,0,0,0.6); border-radius:12px; padding:16px; color:#fff;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:8px;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <span id="inspIcon" style="font-size:22px;">💻</span>
+                    <div>
+                      <div id="inspHostname" style="font-weight:700; font-size:14px; color:#38bdf8;">PC-DIR-01</div>
+                      <div id="inspTipo" style="font-size:11px; color:#94a3b8;">Estación de Trabajo</div>
+                    </div>
+                  </div>
+                  <button onclick="cerrarInspectorDispositivo()" style="background:none; border:none; color:#94a3b8; font-size:18px; cursor:pointer;">✕</button>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+                  <div style="display:flex; justify-content:space-between; background:rgba(30,41,59,0.6); padding:6px 10px; border-radius:6px;">
+                    <span style="color:#94a3b8;">🌐 Dirección IP:</span>
+                    <strong id="inspIp" style="color:#34d399; font-family:var(--font-mono);">192.168.1.11</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; background:rgba(30,41,59,0.6); padding:6px 10px; border-radius:6px;">
+                    <span style="color:#94a3b8;">🧬 Dirección MAC:</span>
+                    <strong id="inspMac" style="color:#fbbf24; font-family:var(--font-mono);">D8:9D:67:A4:12:F1</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; background:rgba(30,41,59,0.6); padding:6px 10px; border-radius:6px;">
+                    <span style="color:#94a3b8;">🏷️ Hostname:</span>
+                    <strong id="inspHostAlias" style="color:#e2e8f0; font-family:var(--font-mono); font-size:11px;">PC-DIR-01.prorridre.local</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; background:rgba(30,41,59,0.6); padding:6px 10px; border-radius:6px;">
+                    <span style="color:#94a3b8;">🏭 Fabricante (OUI):</span>
+                    <strong id="inspFabricante" style="color:#60a5fa;">Dell Inc.</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; background:rgba(30,41,59,0.6); padding:6px 10px; border-radius:6px;">
+                    <span style="color:#94a3b8;">💻 Sistema Operativo:</span>
+                    <span id="inspSo" style="color:#cbd5e1; font-weight:600;">Windows 10 Pro</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; background:rgba(30,41,59,0.6); padding:6px 10px; border-radius:6px;">
+                    <span style="color:#94a3b8;">📍 Oficina Asignada:</span>
+                    <span id="inspOficina" style="color:#cbd5e1;">Dirección Ejecutiva</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; background:rgba(30,41,59,0.6); padding:6px 10px; border-radius:6px;">
+                    <span style="color:#94a3b8;">🔌 Conexión Física:</span>
+                    <span id="inspSwitchPuerto" style="color:#38bdf8;">Switch SG250 (GbE-03)</span>
+                  </div>
+                </div>
+
+                <div id="inspVulnerableBanner" style="display:none; margin-top:10px; padding:8px 10px; border-radius:6px; background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.4); color:#fca5a5; font-size:11.5px; line-height:1.4;">
+                  ⚠️ <strong>Alerta Crítica:</strong> Sistema Windows 7 sin soporte (EoL). Vulnerable a ataques en red LAN sin aislar.
+                </div>
+
+                <div style="margin-top:12px; display:flex; gap:6px;">
+                  <button class="btn btn-sm btn-primary" onclick="probarPingDispositivo()" id="btnInspPing" style="flex:1; padding:6px; font-size:11.5px;">
+                    ⚡ Probar Ping ICMP
+                  </button>
+                  <button class="btn btn-sm btn-ghost" onclick="window.restablecerVistaGlobal3D()" title="Regresar la cámara al panorama general" style="padding:6px 10px; font-size:11.5px;">
+                    🌐 Vista Global
+                  </button>
+                  <button class="btn btn-sm btn-ghost" onclick="cerrarInspectorDispositivo()" style="padding:6px 10px; font-size:11.5px;">
+                    ✕
+                  </button>
+                </div>
+                <div id="inspPingResult" style="display:none; margin-top:6px; font-size:11px; text-align:center; color:#34d399;"></div>
+              </div>
+
+              <!-- CANVAS 3D AREA (THREE.JS) -->
+              <div id="net3dCanvasArea" style="width: 100%; height: 100%; display: none;"></div>
+            </div>
+          </div>
+
+          <section class="card mb-3 inventory-panel" id="networkInventory" aria-labelledby="networkInventoryTitle">
+            <div class="card-header inventory-heading">
+              <div>
+                <h3 id="networkInventoryTitle">Inventario de red</h3>
+                <span class="subtitle">Equipos registrados · seleccione un dato para editarlo</span>
+              </div>
+              <button class="btn btn-sm btn-primary" id="inventoryAddButton" type="button">＋ Agregar equipo</button>
+            </div>
+
+            <div class="inventory-summary" id="inventoryTypeCards" aria-live="polite"></div>
+            <div class="inventory-validation">
+              <div class="inventory-progress-heading">
+                <span>Validación general</span>
+                <strong id="inventoryProgressLabel">Cargando…</strong>
+              </div>
+              <progress id="inventoryProgress" max="100" value="0" aria-label="Progreso general de validación"></progress>
+              <div class="inventory-floor-progress" id="inventoryFloorProgress"></div>
+            </div>
+
+            <div class="inventory-toolbar" role="search" aria-label="Filtros de inventario">
+              <label class="inventory-filter inventory-search">
+                <span>Buscar</span>
+                <input type="search" id="inventorySearch" placeholder="IP, nombre o MAC" autocomplete="off">
+              </label>
+              <label class="inventory-filter">
+                <span>Subred</span>
+                <select id="inventorySubnetFilter"><option value="">Todas</option></select>
+              </label>
+              <label class="inventory-filter">
+                <span>Oficina</span>
+                <select id="inventoryOfficeFilter"><option value="">Todas</option></select>
+              </label>
+              <label class="inventory-filter">
+                <span>Piso</span>
+                <select id="inventoryFloorFilter">
+                  <option value="">Todos</option>
+                  <option value="0">Sin asignar</option>
+                  <option value="1">Piso 1</option><option value="2">Piso 2</option>
+                  <option value="3">Piso 3</option><option value="4">Piso 4</option>
+                  <option value="5">Piso 5</option><option value="6">Piso 6</option>
+                  <option value="7">Piso 7</option>
+                </select>
+              </label>
+              <label class="inventory-filter">
+                <span>Tipo</span>
+                <select id="inventoryTypeFilter">
+                  <option value="">Todos</option>
+                  <option>Computadora</option><option>Laptop</option><option>Impresora</option>
+                  <option>Servidor</option><option>Switch</option><option>Router</option>
+                  <option>Deco</option><option>Celular/otro</option>
+                </select>
+              </label>
+              <label class="inventory-filter">
+                <span>Validación</span>
+                <select id="inventoryStatusFilter">
+                  <option value="">Todos</option>
+                  <option value="validado">Validado</option>
+                  <option value="corregido">Corregido</option>
+                  <option value="pendiente">Pendiente</option>
+                </select>
+              </label>
+              <div class="inventory-toolbar-actions">
+                <button class="btn btn-sm btn-ghost" id="inventoryClearFilters" type="button">Limpiar filtros</button>
+                <button class="btn btn-sm btn-secondary" id="inventoryExportCsv" type="button">Exportar CSV</button>
+              </div>
+            </div>
+
+            <nav class="inventory-floor-tabs" id="inventoryFloorTabs" aria-label="Agrupar inventario por piso"></nav>
+            <div class="inventory-table-meta">
+              <span id="inventoryResultsCount" aria-live="polite">Cargando equipos…</span>
+              <div class="inventory-pagination">
+                <button class="btn btn-sm btn-ghost" id="inventoryPrevPage" type="button" aria-label="Página anterior">Anterior</button>
+                <span id="inventoryPageLabel">Página 1</span>
+                <button class="btn btn-sm btn-ghost" id="inventoryNextPage" type="button" aria-label="Página siguiente">Siguiente</button>
+              </div>
+            </div>
+            <div class="inventory-table-scroll" role="region" aria-label="Tabla editable del inventario" tabindex="0">
+              <table class="table inventory-table">
+                <thead>
+                  <tr>
+                    <th><button type="button" data-sort="estado_validacion">Validación</button></th>
+                    <th><button type="button" data-sort="ip">IP</button></th>
+                    <th><button type="button" data-sort="nombre">Nombre</button></th>
+                    <th><button type="button" data-sort="mac">MAC</button></th>
+                    <th><button type="button" data-sort="tipo">Tipo</button></th>
+                    <th><button type="button" data-sort="oficina">Oficina</button></th>
+                    <th><button type="button" data-sort="piso">Piso</button></th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="networkInventoryBody">
+                  <tr><td colspan="8" class="inventory-empty">Cargando inventario…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <div class="inventory-modal" id="inventoryDeviceModal" role="dialog" aria-modal="true" aria-labelledby="inventoryModalTitle" hidden>
+            <div class="inventory-modal-card">
+              <div class="inventory-modal-heading">
+                <h3 id="inventoryModalTitle">Agregar equipo</h3>
+                <button type="button" class="btn btn-sm btn-ghost" data-close-inventory-modal aria-label="Cerrar">✕</button>
+              </div>
+              <form id="inventoryDeviceForm">
+                <label class="inventory-form-field"><span>Dirección IP</span><input name="ip" required autocomplete="off" placeholder="192.168.1.100"></label>
+                <label class="inventory-form-field"><span>Nombre del equipo</span><input name="nombre" required maxlength="160"></label>
+                <label class="inventory-form-field"><span>MAC</span><input name="mac" autocomplete="off" placeholder="AA:BB:CC:DD:EE:FF"></label>
+                <label class="inventory-form-field"><span>Tipo</span>
+                  <select name="tipo" required>
+                    <option>Computadora</option><option>Laptop</option><option>Impresora</option>
+                    <option>Servidor</option><option>Switch</option><option>Router</option>
+                    <option>Deco</option><option>Celular/otro</option>
+                  </select>
+                </label>
+                <label class="inventory-form-field"><span>Oficina</span><input name="oficina" maxlength="100"></label>
+                <label class="inventory-form-field"><span>Piso</span>
+                  <select name="piso">
+                    <option value="0">Sin asignar</option><option value="1">Piso 1</option>
+                    <option value="2">Piso 2</option><option value="3">Piso 3</option>
+                    <option value="4">Piso 4</option><option value="5">Piso 5</option>
+                    <option value="6">Piso 6</option><option value="7">Piso 7</option>
+                  </select>
+                </label>
+                <p class="inventory-form-error" id="inventoryFormError" role="alert"></p>
+                <div class="inventory-modal-actions">
+                  <button class="btn btn-sm btn-ghost" type="button" data-close-inventory-modal>Cancelar</button>
+                  <button class="btn btn-sm btn-primary" type="submit" id="inventorySaveButton">Guardar equipo</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="inventory-modal" id="inventoryHistoryModal" role="dialog" aria-modal="true" aria-labelledby="inventoryHistoryTitle" hidden>
+            <div class="inventory-modal-card inventory-history-card">
+              <div class="inventory-modal-heading">
+                <h3 id="inventoryHistoryTitle">Historial de cambios</h3>
+                <button type="button" class="btn btn-sm btn-ghost" data-close-inventory-modal aria-label="Cerrar">✕</button>
+              </div>
+              <div id="inventoryHistoryContent" class="inventory-history-content" aria-live="polite"></div>
+              <div class="inventory-modal-actions">
+                <button class="btn btn-sm btn-ghost" type="button" data-close-inventory-modal>Cerrar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 🗺️ INTERACTIVE NETWORK TOPOLOGY MAP -->
+          <div class="card mb-3">
+            <div class="card-header">
+              <div>
+                <h3>🗺️ Mapa Topológico de Red LAN — Oficinas PRORRIDRE</h3>
+                <span class="subtitle">Diagrama de infraestructura: Cableado de red, switches, routers, servidor y computadoras conectadas</span>
+              </div>
+              <span class="badge badge-success" id="topologyStatusBadge">✓ Red LAN 100% Operativa</span>
+            </div>
+
+            <div class="topology-container">
+              <!-- Nivel 1: WAN Internet -->
+              <div class="topology-level">
+                <div class="topo-device" id="topoWanModem" title="Enlace exterior del proveedor de Internet">
+                  <div class="device-icon">🌐</div>
+                  <div class="device-name">Módem Óptico ONT</div>
+                  <div class="device-ip">Telefónica Fibra (50 Mbps)</div>
+                  <div class="device-port" id="modemStatePort">IP: 190.119.45.82 · ONLINE</div>
+                </div>
+              </div>
+
+              <!-- Conexión Módem -> Router -->
+              <div style="text-align:center;">
+                <span class="cable-trunk-badge" id="cableWanTrunk">⬇️ Cable WAN Ethernet (RJ45 Cat 6) ⬇️</span>
+              </div>
+
+              <!-- Nivel 2: Router & Firewall + Servidor Único & NAS -->
+              <div class="topology-level">
+                <div class="topo-device" title="Router de frontera y cortafuegos perimetral">
+                  <div class="device-icon">🛡️</div>
+                  <div class="device-name">Router & Firewall FG-60F</div>
+                  <div class="device-ip">Gateway: 192.168.1.1</div>
+                  <div class="device-port">Perímetro LAN Activo</div>
+                </div>
+
+                <div class="topo-device" style="border-color:#f59e0b;" title="Servidor único On-Premise: Aloja BD SQLite, ERPNext y SGD">
+                  <div class="device-icon">🖥️</div>
+                  <div class="device-name">SRV-PRORRIDRE-01</div>
+                  <div class="device-ip">192.168.1.100 (SPOF)</div>
+                  <div class="device-port" style="color:#fbbf24; background:rgba(245,158,11,0.15);">FastAPI + BD + SGD + ERPNext</div>
+                </div>
+
+                <div class="topo-device" title="Unidad de almacenamiento para copias de seguridad de la LAN">
+                  <div class="device-icon">💾</div>
+                  <div class="device-name">NAS Synology Backup</div>
+                  <div class="device-ip">192.168.1.105</div>
+                  <div class="device-port">Copias 03:00 hrs</div>
+                </div>
+              </div>
+
+              <!-- Conexión a Switch Core Central -->
+              <div style="text-align:center;">
+                <span class="cable-trunk-badge">⬇️ Enlace Troncal Gigabit 1000 Mbps a Switch Central ⬇️</span>
+              </div>
+
+              <!-- Nivel 3: Switch Core Central -->
+              <div class="topology-level">
+                <div class="topo-device" style="min-width:320px; background:rgba(30, 58, 138, 0.4); border-color:#3b82f6;" title="Switch administrable de 48 puertos Gigabit">
+                  <div class="device-icon">🔀</div>
+                  <div class="device-name">Switch Core Administrable Cisco SG350-48P</div>
+                  <div class="device-ip">192.168.1.2 · 48 Puertos GbE Gigabit Ethernet</div>
+                  <div class="device-port" style="color:#38bdf8; background:rgba(56,189,248,0.15);">38 Puertos en Uso · Capacidad 1000 Mbps</div>
+                </div>
+              </div>
+
+              <div style="text-align:center;">
+                <span class="cable-trunk-badge">⬇️ Distribución de Cableado Estructurado a Oficinas PRORRIDRE ⬇️</span>
+              </div>
+
+              <!-- Nivel 4: Oficinas y Computadoras conectadas -->
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-top:10px;" id="officesGrid">
+
+                <!-- Oficina 1: Dirección Ejecutiva -->
+                <div style="background:rgba(15,23,42,0.7); border:1px solid var(--c-border); border-radius:10px; padding:12px;">
+                  <div style="font-size:12.5px; font-weight:700; color:#93c5fd; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                    🏢 Dirección Ejecutiva
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">💻 PC Director Ejecutivo</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.10 · Cat 6 (1000 Mbps)</div>
+                    </div>
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">💻 PC Secretaría General</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.11 · Cat 6 (1000 Mbps)</div>
+                    </div>
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">🖨️ Impresora Kyocera Red</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.12 · Cat 6 (1000 Mbps)</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Oficina 2: Dirección de Obras -->
+                <div style="background:rgba(15,23,42,0.7); border:1px solid var(--c-border); border-radius:10px; padding:12px;">
+                  <div style="font-size:12.5px; font-weight:700; color:#34d399; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                    🏗️ Obras y Supervisión
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">💻 PC Residente Lampa</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.20 · Cat 6 GbE</div>
+                    </div>
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">💻 PC Residente Huancané</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.21 · Cat 6 GbE</div>
+                    </div>
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">💻 PC CAD / GIS Hidráulico</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.24 · Cat 6 GbE</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Oficina 3: Abastecimiento y Almacén -->
+                <div style="background:rgba(15,23,42,0.7); border:1px solid var(--c-border); border-radius:10px; padding:12px;">
+                  <div style="font-size:12.5px; font-weight:700; color:#fbbf24; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                    📦 Abastecimiento y Logística
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">💻 PC Jefe Abastecimiento</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.30 · Cat 6 GbE</div>
+                    </div>
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">💻 PC Operador SIGA/SIAF</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.31 · Cat 6 GbE</div>
+                    </div>
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">💻 PC Kardex Almacén</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.32 · Cat 6 GbE</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Oficina 4: TI y TU COMPUTADORA (DESTACADA) -->
+                <div style="background:rgba(15,23,42,0.7); border:1px solid rgba(56, 189, 248, 0.4); border-radius:10px; padding:12px; box-shadow:0 0 15px rgba(56,189,248,0.15);">
+                  <div style="font-size:12.5px; font-weight:700; color:#38bdf8; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+                    🖥️ Informática / Tu Oficina
+                  </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <!-- TU COMPUTADORA CON CABLE IDENTIFICADO -->
+                    <div class="topo-device device-host" style="min-width:auto; padding:10px 12px; text-align:left;" id="topoHostMachine">
+                      <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <span style="font-size:11px; background:#0284c7; color:#fff; padding:2px 6px; border-radius:4px; font-weight:700;">⭐ TU COMPUTADORA</span>
+                        <span style="font-size:11px; color:#34d399; font-weight:bold;">🟢 Cable OK</span>
+                      </div>
+                      <div style="font-size:13px; font-weight:700; color:#fff; margin-top:4px;" id="topoHostName">Equipo Local</div>
+                      <div style="font-size:11px; color:#bae6fd; font-family:var(--font-mono);" id="topoHostIp">IP: 192.168.0.10</div>
+                      <div style="font-size:10.5px; color:#34d399; margin-top:3px;">Cable RJ45 Cat 6 · 1000 Mbps GbE</div>
+                    </div>
+
+                    <div class="topo-device" style="min-width:auto; padding:8px 10px; text-align:left;">
+                      <div style="font-size:12px; font-weight:600;">💻 PC Soporte Técnico LAN</div>
+                      <div style="font-size:10.5px; color:#94a3b8;">IP: 192.168.1.41 · Cat 6 GbE</div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Internet + Server -->
+          <div class="grid-2">
+            <div class="card infra-card">
+              <div class="card-header">
+                <h3><span class="infra-status-dot dot-caido" id="infraDotInternet"></span> Enlace a Internet</h3>
+                <span class="alert-tag tag-mu" id="infraBadgeInternet">MONITOREANDO</span>
+              </div>
+              <div style="padding:0.5rem 0;">
+                <p style="font-size:0.82rem; color:var(--c-text-secondary); margin-bottom:0.6rem;">
+                  Proveedor: <strong>Telefónica del Perú</strong> · 50 Mbps contratado
+                </p>
+                <p style="font-size:0.82rem; color:var(--c-accent-red); font-weight:600;" id="infraTextoCaida">
+                  ⏱️ Enlace sujeto a bucle de caída recurrente de hasta 2 horas
+                </p>
+                <p style="font-size:0.78rem; color:var(--c-text-muted); margin-top:0.4rem;">
+                  Módem Huawei HG8245H — Conectado a Router Fortinet
+                </p>
+                <div class="mt-2">
+                  <button class="btn btn-sm btn-danger" onclick="alert('Reporte generado a Telefónica del Perú: Ticket #GORE-PUNO-8842')">📞 Reportar a ISP</button>
+                  <button class="btn btn-sm btn-ghost" style="margin-left:0.4rem;" onclick="diagnosticarCableMiEquipo()">🔄 Verificar enlace</button>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="card infra-card">
+              <div class="card-header">
+                <h3><span class="infra-status-dot dot-activo"></span> Servidor Principal</h3>
+                <span class="alert-tag tag-n">ACTIVO</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--c-text-secondary); margin-bottom:0.6rem;">
+                SRV-PRORRIDRE-01 · Ubuntu Server 22.04 LTS · Uptime: 45 días
+              </p>
+              <div class="server-gauge">
+                <div class="gauge-item">
+                  <div class="gauge-circle ok" id="gaugeCPU">67%</div>
+                  <div class="gauge-label">CPU</div>
+                </div>
+                <div class="gauge-item">
+                  <div class="gauge-circle warn" id="gaugeRAM">78%</div>
+                  <div class="gauge-label">RAM</div>
+                </div>
+                <div class="gauge-item">
+                  <div class="gauge-circle ok" id="gaugeDisk">62%</div>
+                  <div class="gauge-label">Disco</div>
+                </div>
+                <div class="gauge-item">
+                  <div class="gauge-circle crit" id="gaugeUPS">45%</div>
+                  <div class="gauge-label">UPS</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LAN + Backups -->
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header">
+                <h3><span class="infra-status-dot dot-activo"></span> Red LAN</h3>
+                <span class="alert-tag tag-n">OPERATIVA</span>
+              </div>
+              <p style="font-size:0.82rem; color:var(--c-text-secondary);">
+                Switch Cisco SG350 — <strong>38/48</strong> puertos activos · 1000 Mbps
+              </p>
+              <div class="progress-bar mt-1">
+                <div class="progress-fill green" style="width:79%"></div>
+              </div>
+              <p style="font-size:0.72rem; color:var(--c-text-muted); margin-top:6px;">38 dispositivos conectados</p>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3>💾 Estado de Backups</h3>
+              </div>
+              <div class="alert-list">
+                <div class="alert-item urgente" style="border-left-width:3px;">
+                  <span class="alert-icon">⚠️</span>
+                  <div class="alert-body">
+                    <div class="alert-title">NAS Local — Último backup: hace 72h</div>
+                    <div class="alert-desc">Espacio: 2.1 TB / 4 TB · Se recomienda backup inmediato</div>
+                  </div>
+                </div>
+                <div class="alert-item muy_urgente" style="border-left-width:3px;">
+                  <span class="alert-icon">☁️</span>
+                  <div class="alert-body">
+                    <div class="alert-title">Cloud (Google Workspace) — INACTIVO</div>
+                    <div class="alert-desc">Sin conexión a Internet. Backup cloud suspendido.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-2">
+                <button class="btn btn-sm btn-success" onclick="alert('Ejecutando backup manual al NAS...')">💾 Backup Manual NAS</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ERPNext Status -->
+          <div class="card">
+            <div class="card-header">
+              <h3><span class="infra-status-dot dot-advertencia"></span> ERPNext — Estado del Sistema</h3>
+              <span class="alert-tag tag-u">MODO LOCAL</span>
+            </div>
+            <div class="grid-3" style="margin-bottom:0;">
+              <div>
+                <p style="font-size:0.75rem; color:var(--c-text-muted);">VERSIÓN</p>
+                <p style="font-size:0.92rem; font-weight:600;">ERPNext 14.x</p>
+              </div>
+              <div>
+                <p style="font-size:0.75rem; color:var(--c-text-muted);">URL LOCAL</p>
+                <p style="font-size:0.92rem; font-weight:600; font-family:var(--font-mono);">192.168.1.100:8000</p>
+              </div>
+              <div>
+                <p style="font-size:0.75rem; color:var(--c-text-muted);">MODO DE ACCESO</p>
+                <p style="font-size:0.92rem; font-weight:600; color:var(--c-accent-amber);">Solo LAN (Internet caído)</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Recommendations for IT -->
+          <div class="card mt-2">
+            <div class="card-header">
+              <h3>🤖 Propuestas de Mejora Inteligente — TI</h3>
+            </div>
+            <div class="ai-recommendation">
+              <div class="ai-icon">🛡️</div>
+              <div class="ai-text">
+                <h4>Resiliencia: Enlace de Contingencia</h4>
+                <p>Con un promedio de 2h de caída, se recomienda contratar un <strong>enlace secundario 4G/5G</strong> con failover automático. Costo estimado: S/ 350/mes.</p>
+                <div class="ai-savings">💡 Reducción de downtime: ~90% · ROI en 2 meses</div>
+              </div>
+            </div>
+            <div class="ai-recommendation">
+              <div class="ai-icon">🔄</div>
+              <div class="ai-text">
+                <h4>Servidor Redundante</h4>
+                <p>Servidor único es punto crítico de falla. Implementar <strong>réplica en segundo servidor</strong> o migrar a esquema híbrido (On-Premise + Cloud). Inversión: ~S/ 25,000.</p>
+                <div class="ai-savings">💡 Disponibilidad: 99.5% → 99.95%</div>
+              </div>
+            </div>
+            <div class="ai-recommendation">
+              <div class="ai-icon">📊</div>
+              <div class="ai-text">
+                <h4>Automatización de Backups</h4>
+                <p>Configurar <strong>backup automático diario</strong> incremental al NAS y semanal completo al cloud. Usar rsync + cron en el servidor Ubuntu.</p>
+                <div class="ai-savings">💡 Riesgo de pérdida de datos: Reducción del 95%</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             VIEW: CENTRO DE ALERTAS
+             ═══════════════════════════════ -->
+        <section class="view-panel" id="view-alertas">
+          <div class="view-tabs">
+            <button class="view-tab active" onclick="filterAlerts('all', this)">🔔 Todas (9)</button>
+            <button class="view-tab" onclick="filterAlerts('muy_urgente', this)">🔴 Muy Urgentes (3)</button>
+            <button class="view-tab" onclick="filterAlerts('urgente', this)">🟡 Urgentes (3)</button>
+            <button class="view-tab" onclick="filterAlerts('normal', this)">🟢 Normales (3)</button>
+          </div>
+          <div class="card">
+            <div class="alert-list" id="alertFullList">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             VIEW: RESUMEN EJECUTIVO
+             ═══════════════════════════════ -->
+        <section class="view-panel" id="view-reportes">
+          <div class="card">
+            <div class="card-header">
+              <h3>📋 Generador de Resumen Ejecutivo</h3>
+              <button class="btn btn-sm btn-primary" id="btnGenSummary" onclick="generateSummary()">
+                ✨ Generar Resumen
+              </button>
+            </div>
+            <p style="font-size:0.82rem; color:var(--c-text-secondary); margin-bottom:1rem;">
+              Genera un resumen ejecutivo consolidado en 1 clic para reportar al GORE Puno. Incluye KPIs, estado de obras, alertas críticas y recomendaciones.
+            </p>
+            <div class="summary-box">
+              <div class="summary-content" id="summaryContent">
+                Presione "Generar Resumen" para crear un informe ejecutivo consolidado...
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+          <div class="card mt-2">
+            <div class="card-header">
+              <h3>🔗 Acceso Rápido a Sistemas</h3>
+              <span class="subtitle">Interoperabilidad con sistemas del GORE Puno</span>
+            </div>
+            <div class="ext-links">
+              <a href="#" class="ext-link" onclick="alert('Abriendo SGD del GORE Puno...')">📄 SGD — Gestión Documental</a>
+              <a href="#" class="ext-link" onclick="alert('Abriendo SIGA...')">📦 SIGA — Logística Nacional</a>
+              <a href="#" class="ext-link" onclick="alert('Abriendo SIAF...')">💰 SIAF — Sistema Financiero</a>
+              <a href="http://192.168.1.100:8000" class="ext-link" target="_blank">⚙️ ERPNext — ERP Interno</a>
+              <a href="#" class="ext-link" onclick="alert('Abriendo SEACE...')">📑 SEACE — Contrataciones</a>
+              <a href="#" class="ext-link" onclick="alert('Abriendo INFObras...')">🏗️ INFObras — Contraloría</a>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════ VIEW 6: EMULADOR INTELIGENTE (SGD & SIAF) ════════════ -->
+        <section class="view-panel" id="view-emulador">
+          <div class="card mb-2" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(59, 130, 246, 0.3);">
+            <div class="card-header">
+              <div>
+                <h3>⚡ Emulador Inteligente de Flujo Institucional (SGD & SIAF/SIGA)</h3>
+                <span class="subtitle">Simulación en tiempo real del ciclo documental y presupuestal de PRORRIDRE</span>
+              </div>
+              <div class="header-actions">
+                <button class="btn btn-primary" id="btnSimularSGD" onclick="ejecutarSimulacionSGD()">
+                  📥 Simular Ingreso Diario (15 Expedientes SGD)
+                </button>
+                <button class="btn btn-secondary" id="btnSimularSIAF" onclick="ejecutarSimulacionSIAF()">
+                  💰 Simular Devengado SIAF
+                </button>
+              </div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;">
+              Este módulo emula el ingreso de 15 a 20 expedientes diarios clasificándolos automáticamente según la regla técnica institucional de PRORRIDRE: 
+              <strong style="color: #ef4444;">🔴 MU (Muy Urgente / Crítico)</strong>, 
+              <strong style="color: #f59e0b;">🟡 U (Urgente / Regular)</strong> y 
+              <strong style="color: #10b981;">🟢 N (Normal / Informativo)</strong>. Permite interactuar con persistencia On-Premise.
+            </p>
+            <div id="simuladorBanner" style="display:none; padding: 10px 14px; border-radius: 8px; margin-bottom: 15px; font-size: 13px;"></div>
+          </div>
+
+          <!-- SGD Expedientes Live Table -->
+          <div class="card mb-2">
+            <div class="card-header">
+              <h3>📄 Expedientes en Trámite Documentario (SGD Activo)</h3>
+              <div class="header-actions">
+                <select id="filtroPrioSGD" onchange="filtrarExpedientesSGD(this.value)" style="padding: 6px 12px; background: rgba(15,23,42,0.8); border: 1px solid var(--border-color); color: #fff; border-radius: 6px;">
+                  <option value="">Todas las prioridades</option>
+                  <option value="MU">🔴 MU (Muy Urgente)</option>
+                  <option value="U">🟡 U (Urgente)</option>
+                  <option value="N">🟢 N (Normal)</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Código SGD</th>
+                    <th>Prioridad</th>
+                    <th>Asunto / Requerimiento</th>
+                    <th>Remitente</th>
+                    <th>Destinatario</th>
+                    <th>Estado</th>
+                    <th>Días</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaExpedientesSGD">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ════════════ VIEW 7: ASISTENTE INTELIGENTE ON-PREMISE ════════════ -->
+        <section class="view-panel" id="view-asistente">
+          <div class="card mb-2">
+            <div class="card-header">
+              <div>
+                <h3>🤖 Asistente Inteligente On-Premise PRORRIDRE</h3>
+                <span class="subtitle">Motor de Conocimiento Local para Gestión de Obras, Red LAN y Riesgos de TI</span>
+              </div>
+              <span class="badge badge-success">✓ 100% Autónomo (Modo Local)</span>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+              <!-- Chat Box -->
+              <div style="display: flex; flex-direction: column; height: 520px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden;">
+                <div id="chatMessages" style="flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
+                  <div style="background: rgba(30, 41, 59, 0.8); padding: 12px 16px; border-radius: 8px; border-left: 3px solid #3b82f6; font-size: 13.5px; line-height: 1.5;">
+                    👋 <strong>¡Saludos institucional!</strong> Soy el Asistente Inteligente de PRORRIDRE (GORE Puno). Puedo responder consultas técnicas del presupuesto (PIM S/ 45.6M), las 8 obras de irrigación, el bucle de desconexión de red de 2 horas o recomendaciones para el servidor único On-Premise.
+                  </div>
+                </div>
+                <div style="padding: 12px; background: rgba(30, 41, 59, 0.5); border-top: 1px solid var(--border-color); display: flex; gap: 10px;">
+                  <input type="text" id="chatInput" placeholder="Escriba su consulta técnica o presupuestal..." style="flex: 1; padding: 10px 14px; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border-color); border-radius: 8px; color: #fff;" onkeydown="if(event.key === 'Enter') enviarConsultaAsistente()">
+                  <button class="btn btn-primary" onclick="enviarConsultaAsistente()" style="padding: 0 20px;">
+                    Enviar 🚀
+                  </button>
+                </div>
+              </div>
+
+              <!-- Quick prompts -->
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                <h4 style="font-size: 14px; color: var(--text-primary); margin-top: 0;">Consultas Frecuentes Rápidas:</h4>
+                <button class="btn btn-secondary" style="text-align: left; font-size: 12.5px; padding: 10px;" onclick="preguntarRapido('¿Cuál es el estado del presupuesto PIM S/ 45.6M y saldo por ejecutar?')">
+                  📊 Estado del Presupuesto PIM 2026
+                </button>
+                <button class="btn btn-secondary" style="text-align: left; font-size: 12.5px; padding: 10px;" onclick="preguntarRapido('¿Cómo afecta la caída de enlace de internet y cómo opera la LAN 1000 Mbps?')">
+                  🌐 Contingencia de Red e Internet
+                </button>
+                <button class="btn btn-secondary" style="text-align: left; font-size: 12.5px; padding: 10px;" onclick="preguntarRapido('¿Cuál es la situación del proyecto Lampa y Taraco Huancané?')">
+                  🏗️ Avance de Obras Prioritarias
+                </button>
+                <button class="btn btn-secondary" style="text-align: left; font-size: 12.5px; padding: 10px;" onclick="preguntarRapido('¿Qué riesgo representa el servidor único On-Premise y qué backups hay?')">
+                  🖥️ Auditoría de Servidor Único
+                </button>
+                <button class="btn btn-secondary" style="text-align: left; font-size: 12.5px; padding: 10px;" onclick="preguntarRapido('¿Cuáles son las reglas de clasificación de expedientes MU en el SGD?')">
+                  📄 Reglas de Expedientes Críticos SGD
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- 🚨 FLOATING NETWORK FAILURE ALERT BANNER -->
+  <div id="floatingNetworkAlert" class="floating-net-alert" style="display:none;">
+    <div style="font-size: 26px;">🚨</div>
+    <div style="flex:1;">
+      <div style="font-size:13.5px; font-weight:700; color:#f87171;" id="alertNetTitle">
+        ALERTA CRÍTICA: Falla en Enlace a Internet (ISP Telefónica)
+      </div>
+      <div style="font-size:12px; color:#e2e8f0; margin-top:3px;" id="alertNetDesc">
+        Bucle de caída recurrente detectado. Tu cable de red Ethernet RJ45 sigue 100% conectado a 1000 Mbps. La red LAN y el servidor On-Premise continúan operando sin interrupción.
+      </div>
+    </div>
+    <button onclick="cerrarAlertaRed()" style="background:none; border:none; color:#94a3b8; font-size:16px; cursor:pointer;">✕</button>
+  </div>
+
+  <!-- 🤖 FLOATING AI AGENT TRIGGER (BOTTOM-RIGHT CORNER) -->
+  <button class="floating-ai-btn" id="floatingAiBtn" onclick="toggleFloatingAi()" title="Consultar Asistente Inteligente On-Premise">
+    <span>🤖</span>
+    <div class="ai-badge"></div>
+    <span class="ai-tooltip">💬 Asistente IA PRORRIDRE</span>
+  </button>
+
+  <!-- 🤖 FLOATING AI AGENT CHAT WINDOW -->
+  <div class="floating-ai-window" id="floatingAiWindow">
+    <div class="floating-ai-header">
+      <div class="title-area">
+        <div style="font-size:22px;">🤖</div>
+        <div>
+          <h4>Asistente IA Institucional</h4>
+          <small>🟢 Motor On-Premise LAN Activo</small>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:4px;">
+        <button class="floating-ai-close-btn" onclick="toggleFloatingAi()" title="Minimizar">✕</button>
+      </div>
+    </div>
+
+    <div class="floating-ai-body" id="floatingChatMessages">
+      <div style="background: rgba(30, 41, 59, 0.85); padding: 12px 14px; border-radius: 8px; border-left: 3px solid #3b82f6; font-size: 13px; line-height: 1.45;">
+        👋 <strong>¡Hola!</strong> Soy el Asistente IA de PRORRIDRE. Puedes consultarme en cualquier momento sobre el presupuesto (PIM S/ 45.6M), las 8 obras de riego, el mapa de red LAN de las oficinas o el estado del cable de red conectado a tu computadora.
+      </div>
+
+      <div class="floating-ai-chips">
+        <div class="floating-ai-chip" onclick="preguntarFlotante('¿Cuál es el estado del cable de red conectado a mi computadora?')">🔌 Mi Cable de Red</div>
+        <div class="floating-ai-chip" onclick="preguntarFlotante('¿Cómo está la red LAN de las oficinas y el enlace a Internet?')">🌐 Diagnóstico Red LAN</div>
+        <div class="floating-ai-chip" onclick="preguntarFlotante('¿Cuál es el saldo disponible del presupuesto PIM 2026?')">💰 Presupuesto PIM</div>
+        <div class="floating-ai-chip" onclick="preguntarFlotante('¿Qué obras tienen riesgo o están paralizadas?')">🏗️ Estado de Obras</div>
+        <div class="floating-ai-chip" onclick="preguntarFlotante('¿Qué alertas críticas existen en el servidor On-Premise?')">🖥️ Servidor y Backups</div>
+      </div>
+    </div>
+
+    <div class="floating-ai-footer">
+      <input type="text" id="floatingChatInput" class="floating-ai-input" placeholder="Pregunta algo sobre obras, red o presupuesto..." onkeydown="if(event.key==='Enter') enviarConsultaFlotante()">
+      <button class="btn btn-primary" onclick="enviarConsultaFlotante()" style="padding: 0 14px; font-size: 13px;">
+        Enviar 🚀
+      </button>
+    </div>
+  <!-- MODAL: CONECTAR NUEVA COMPUTADORA A LA RED INSTITUCIONAL (ADVANCED IP SCANNER) -->
+  <div id="conectarPcModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); z-index:9999; overflow-y:auto; padding:20px;">
+    <div style="max-width:540px; margin:40px auto; background:#0f172a; border:1px solid rgba(16,185,129,0.4); box-shadow:0 24px 60px rgba(0,0,0,0.8), 0 0 30px rgba(16,185,129,0.25); border-radius:14px; overflow:hidden;">
+      <div style="padding:16px 20px; background:linear-gradient(135deg, rgba(6,78,59,0.9), rgba(15,23,42,0.95)); border-bottom:1px solid rgba(16,185,129,0.3); display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:26px;">🔌</span>
+          <div>
+            <h3 style="margin:0; font-size:16px; color:#ecfdf5; font-weight:700;">Conectar Nueva Computadora a la Red</h3>
+            <span style="font-size:11.5px; color:#a7f3d0;">Modelado 3D dinámico, tendido de cable Cat 6 y enlace al switch departamental</span>
+          </div>
+        </div>
+        <button onclick="window.cerrarModalConectarComputadora()" style="background:none; border:none; color:#94a3b8; font-size:22px; cursor:pointer;">✕</button>
+      </div>
+
+      <form onsubmit="window.guardarYConectarNuevaComputadora(event)" style="padding:22px; display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:5px;">
+            🌐 Dirección IPv4 en Subred (192.168.1.0/24):
+          </label>
+          <input type="text" id="nuevaPcIp" placeholder="Ej. 192.168.1.98" required pattern="^192\.168\.\d+\.\d+$"
+                 style="width:100%; padding:9px 12px; background:rgba(30,41,59,0.85); border:1px solid rgba(59,130,246,0.4); border-radius:8px; color:#34d399; font-family:var(--font-mono); font-weight:600; font-size:13.5px; outline:none;">
+          <small style="color:#64748b; font-size:11px;">El gemelo digital comprobará la conectividad y tenderá el cable Cat 6 al switch seleccionado.</small>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:5px;">
+              🏷️ Identificador / Hostname:
+            </label>
+            <input type="text" id="nuevaPcNombre" placeholder="Ej. PC-OBRAS-17" required
+                   style="width:100%; padding:9px 12px; background:rgba(30,41,59,0.85); border:1px solid rgba(59,130,246,0.4); border-radius:8px; color:#fff; font-size:12.5px; outline:none;">
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:5px;">
+              👤 Usuario Responsable:
+            </label>
+            <input type="text" id="nuevaPcUsuario" placeholder="Ej. Ing. Especialista SIGA" required
+                   style="width:100%; padding:9px 12px; background:rgba(30,41,59,0.85); border:1px solid rgba(59,130,246,0.4); border-radius:8px; color:#fff; font-size:12.5px; outline:none;">
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:5px;">
+            🏢 Oficina / Switch Departamental de Conexión:
+          </label>
+          <select id="nuevaPcOficina" style="width:100%; padding:9px 12px; background:rgba(30,41,59,0.95); border:1px solid rgba(59,130,246,0.4); border-radius:8px; color:#fff; font-size:12.5px; outline:none;">
+            <option value="OF-TI">Informática, Redes y Soporte TI (Switch Cisco SG250 - SW-TI)</option>
+            <option value="OF-DIR">Dirección Ejecutiva y Planificación (Switch Cisco SG250 - SW-DIR)</option>
+            <option value="OF-OBR">Dirección de Obras y Supervisión (Switch Cisco SG250 - SW-OBRAS)</option>
+            <option value="OF-LOG">Abastecimiento, Logística y Almacén (Switch Cisco SG250 - SW-LOG)</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:5px;">
+              💻 Sistema Operativo:
+            </label>
+            <select id="nuevaPcSo" style="width:100%; padding:9px 12px; background:rgba(30,41,59,0.95); border:1px solid rgba(59,130,246,0.4); border-radius:8px; color:#fff; font-size:12.5px; outline:none;">
+              <option value="Windows 11 Pro">Windows 11 Pro 64-bit (Estable)</option>
+              <option value="Windows 10 Pro">Windows 10 Pro</option>
+              <option value="Windows 7 SP1">Windows 7 SP1 (Vulnerable EoL)</option>
+              <option value="Ubuntu Linux 22.04 LTS">Ubuntu Linux 22.04 LTS</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:5px;">
+              🧠 Memoria RAM:
+            </label>
+            <select id="nuevaPcRam" style="width:100%; padding:9px 12px; background:rgba(30,41,59,0.95); border:1px solid rgba(59,130,246,0.4); border-radius:8px; color:#fff; font-size:12.5px; outline:none;">
+              <option value="16 GB">16 GB DDR4</option>
+              <option value="32 GB">32 GB DDR4</option>
+              <option value="8 GB">8 GB DDR4</option>
+              <option value="4 GB">4 GB (Bajo Rendimiento)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
+          <button type="button" class="btn btn-ghost" onclick="window.cerrarModalConectarComputadora()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-success" id="btnConfirmarConectarPc" style="background:#10b981; border-color:#059669; font-weight:700; box-shadow:0 0 16px rgba(16,185,129,0.4);">
+            🔌 Conectar y Renderizar en 3D
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/network3d.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/inventory.js"></script>
+</body>
+</html>
